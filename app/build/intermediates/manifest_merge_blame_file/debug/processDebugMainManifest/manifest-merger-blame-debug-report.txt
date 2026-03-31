@@ -1,0 +1,155 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.vrdesert"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-feature
+11-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:5:5-78
+12        android:glEsVersion="0x00020000"
+12-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:5:19-51
+13        android:required="true" />
+13-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:5:52-75
+14    <uses-feature
+14-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:6:5-94
+15        android:name="android.hardware.sensor.gyroscope"
+15-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:6:19-67
+16        android:required="true" />
+16-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:6:68-91
+17
+18    <uses-permission android:name="android.permission.INTERNET" />
+18-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:8:5-67
+18-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:8:22-64
+19
+20    <permission
+20-->[androidx.core:core:1.9.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\00eeb73d329f60914ee7cf1a9183d8d3\transformed\core-1.9.0\AndroidManifest.xml:22:5-24:47
+21        android:name="com.example.vrdesert.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+21-->[androidx.core:core:1.9.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\00eeb73d329f60914ee7cf1a9183d8d3\transformed\core-1.9.0\AndroidManifest.xml:23:9-81
+22        android:protectionLevel="signature" />
+22-->[androidx.core:core:1.9.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\00eeb73d329f60914ee7cf1a9183d8d3\transformed\core-1.9.0\AndroidManifest.xml:24:9-44
+23
+24    <uses-permission android:name="com.example.vrdesert.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+24-->[androidx.core:core:1.9.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\00eeb73d329f60914ee7cf1a9183d8d3\transformed\core-1.9.0\AndroidManifest.xml:26:5-97
+24-->[androidx.core:core:1.9.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\00eeb73d329f60914ee7cf1a9183d8d3\transformed\core-1.9.0\AndroidManifest.xml:26:22-94
+25
+26    <application
+26-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:10:5-33:19
+27        android:allowBackup="true"
+27-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:11:9-35
+28        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+28-->[androidx.core:core:1.9.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\00eeb73d329f60914ee7cf1a9183d8d3\transformed\core-1.9.0\AndroidManifest.xml:28:18-86
+29        android:debuggable="true"
+30        android:extractNativeLibs="false"
+31        android:label="@string/app_name"
+31-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:12:9-41
+32        android:supportsRtl="true"
+32-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:13:9-35
+33        android:testOnly="true"
+34        android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
+34-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:14:9-65
+35        <activity
+35-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:15:9-23:20
+36            android:name="com.example.vrdesert.StartActivity"
+36-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:16:13-42
+37            android:exported="true"
+37-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:17:13-36
+38            android:screenOrientation="landscape" >
+38-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:18:13-50
+39            <intent-filter>
+39-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:19:13-22:29
+40                <action android:name="android.intent.action.MAIN" />
+40-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:20:17-69
+40-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:20:25-66
+41
+42                <category android:name="android.intent.category.LAUNCHER" />
+42-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:21:17-77
+42-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:21:27-74
+43            </intent-filter>
+44        </activity>
+45        <activity
+45-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:25:9-27:53
+46            android:name="com.example.vrdesert.StoryActivity"
+46-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:26:13-42
+47            android:screenOrientation="landscape" />
+47-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:27:13-50
+48        <activity
+48-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:29:9-32:77
+49            android:name="com.example.vrdesert.MainActivity"
+49-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:30:13-41
+50            android:configChanges="orientation|keyboardHidden|screenSize"
+50-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:32:13-74
+51            android:screenOrientation="landscape" />
+51-->C:\Users\ksnau\.gemini\antigravity\scratch\VRCaveSimulator\app\src\main\AndroidManifest.xml:31:13-50
+52
+53        <provider
+53-->[androidx.emoji2:emoji2:1.2.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\e6824132ad21a51f5bd68e19997dca65\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+54            android:name="androidx.startup.InitializationProvider"
+54-->[androidx.emoji2:emoji2:1.2.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\e6824132ad21a51f5bd68e19997dca65\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+55            android:authorities="com.example.vrdesert.androidx-startup"
+55-->[androidx.emoji2:emoji2:1.2.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\e6824132ad21a51f5bd68e19997dca65\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+56            android:exported="false" >
+56-->[androidx.emoji2:emoji2:1.2.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\e6824132ad21a51f5bd68e19997dca65\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
+57            <meta-data
+57-->[androidx.emoji2:emoji2:1.2.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\e6824132ad21a51f5bd68e19997dca65\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+58                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+58-->[androidx.emoji2:emoji2:1.2.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\e6824132ad21a51f5bd68e19997dca65\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+59                android:value="androidx.startup" />
+59-->[androidx.emoji2:emoji2:1.2.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\e6824132ad21a51f5bd68e19997dca65\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+60            <meta-data
+60-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\ksnau\.gradle\caches\8.13\transforms\9847b446801a5990c766dd1de70e77c0\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:29:13-31:52
+61                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+61-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\ksnau\.gradle\caches\8.13\transforms\9847b446801a5990c766dd1de70e77c0\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:30:17-78
+62                android:value="androidx.startup" />
+62-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\ksnau\.gradle\caches\8.13\transforms\9847b446801a5990c766dd1de70e77c0\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:31:17-49
+63            <meta-data
+63-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+64                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+64-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+65                android:value="androidx.startup" />
+65-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+66        </provider>
+67
+68        <receiver
+68-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+69            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+69-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+70            android:directBootAware="false"
+70-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+71            android:enabled="true"
+71-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+72            android:exported="true"
+72-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+73            android:permission="android.permission.DUMP" >
+73-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+74            <intent-filter>
+74-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+75                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+75-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+75-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+76            </intent-filter>
+77            <intent-filter>
+77-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+78                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+78-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+78-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+79            </intent-filter>
+80            <intent-filter>
+80-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+81                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+82            </intent-filter>
+83            <intent-filter>
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+84                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\ksnau\.gradle\caches\8.13\transforms\f31e9d1da53ef96c37d73819271a7b63\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
+85            </intent-filter>
+86        </receiver>
+87    </application>
+88
+89</manifest>

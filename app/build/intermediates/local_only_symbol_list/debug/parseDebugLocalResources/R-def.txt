@@ -1,0 +1,23 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color white
+drawable cave_tunnel
+id btnBegin
+id btnMove
+id btnStartGame
+id feedbackLeft
+id feedbackRight
+id glSurfaceView
+id healthBarLeft
+id healthBarRight
+id resultLeft
+id resultRight
+id timerLeft
+id timerRight
+layout activity_main
+layout activity_start
+layout activity_story
+string app_name
+string move_forward
+style Theme.VRCaveSimulator
