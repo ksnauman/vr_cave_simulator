@@ -42,9 +42,9 @@ public class Sphere {
                 vertices[vIndex++] = y * radius;
                 vertices[vIndex++] = z * radius;
 
-                // 1.0f - u flips horizontally so the panorama is read correctly from inside
-                // Multiplying by 4.0f to tile the cave texture horizontally for 360 coverage
-                texCoords[tIndex++] = (1.0f - u) * 4.0f;
+                // 1.0f - u flips horizontally so the panorama reads correctly from inside
+                // 1.0f = one full photo wraps the entire sphere (no tiling)
+                texCoords[tIndex++] = (1.0f - u) * 1.0f;
                 texCoords[tIndex++] = v;
             }
         }

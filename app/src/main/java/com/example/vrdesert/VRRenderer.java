@@ -3,65 +3,66 @@ package com.example.vrdesert;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import java.util.Random;
 import android.content.Context;
-import com.example.vrdesert.shapes.CaveRoom;
-import com.example.vrdesert.shapes.Cube;
+import com.example.vrdesert.shapes.Sphere;
 import com.example.vrdesert.shapes.TextureHelper;
-import com.example.vrdesert.shapes.ImageBillboard;
 import com.example.vrdesert.shapes.Crosshair;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+/**
+ * VRRenderer — Ice Cave journey renderer.
+ *
+ * Renders a large inside-out Sphere mapped with one of 4 real ice-cave photo
+ * textures. Scene switches (scene 0→1→2→3) via setScene() called from
+ * MainActivity during frost transitions.
+ *
+ * Gyro head-tracking, look-back recentering, and stereoscopic split-screen
+ * are fully preserved from the original implementation.
+ */
 public class VRRenderer implements GLSurfaceView.Renderer {
 
-    private final SensorHandler sensorHandler;
+    // ── Dependencies ───────────────────────────────────────────────────────
+    private final Context            context;
+    private final SensorHandler      sensorHandler;
     private final InteractionManager interactionManager;
 
-    private Context context;
-    private ImageBillboard tunnelBillboard;
-    private CaveRoom caveRoom;
-    private int caveTextureId;
-    private int tunnelShaderProgram;
-    private int mushroomTexId;
-    private int plantTexId;
-    private int fungusTexId;
+    // ── Scene state ────────────────────────────────────────────────────────
+    private int currentScene = 0;  // 0–3, changed by setScene()
 
-    // View & Projection
-    private float[] leftProjectionMatrix = new     float[16];
-    private float[] rightProjectionMatrix = new float[16];
-    private float[] viewMatrix = new float[16];
-    private float[] vPMatrix = new float[16];
-    private float[] scratchMatrix = new float[16];
-    private float[] modelMatrix = new float[16];
-
-    // Camera state
-    private float camX = 0f;
-    private float camY = 1.0f; 
-    private float camZ = 0f;
-    
-    // Static system: camera doesn't move, only visual velocity changes
-    private float visualVelocity = 0f;
-    private float totalVisualDistance = 0f;
-    private float visualYaw = 0f;
-    
-    // IPD for stereoscopic effect
-    private static final float EYE_OFFSET = 0.05f;
-
-    // Objects in Scene (Spawns 15 randomized items)
-    private GameObject[] objects = new GameObject[15];
-
-    // UI Elements
+    // ── GL objects ─────────────────────────────────────────────────────────
+    private Sphere   caveSphere;
     private Crosshair crosshair;
-    private float[] uiProjectionMatrix = new float[16];
-    private float[] uiModelMatrix = new float[16];
-    private float[] uiMVPMatrix = new float[16];
+    private int      tunnelShaderProgram;
 
+    // One texture per scene (loaded once in onSurfaceCreated)
+    private int[] sceneTextureIds = new int[4];
+
+    // ── Matrices ───────────────────────────────────────────────────────────
+    private float[] leftProjectionMatrix  = new float[16];
+    private float[] rightProjectionMatrix = new float[16];
+    private float[] viewMatrix            = new float[16];
+    private float[] vPMatrix              = new float[16];
+    private float[] scratchMatrix         = new float[16];
+    private float[] modelMatrix           = new float[16];
+    private float[] uiProjectionMatrix    = new float[16];
+    private float[] uiModelMatrix         = new float[16];
+    private float[] uiMVPMatrix           = new float[16];
+
+    // ── Camera ─────────────────────────────────────────────────────────────
+    private static final float CAM_Y      = 1.0f;
+    private static final float EYE_OFFSET = 0.05f; // IPD
+
+    // ── Visual motion (MOVE burst) ─────────────────────────────────────────
+    private float visualVelocity     = 0f;
+    private float totalVisualDistance = 0f;
+    private float visualYaw          = 0f;
+
+    // ── Screen size ────────────────────────────────────────────────────────
     private int width, height;
 
-
-
-    private final String tunnelVertexShaderCode =
+    // ── Shaders ────────────────────────────────────────────────────────────
+    private static final String VERT_SRC =
         "uniform mat4 uMVPMatrix;" +
         "attribute vec4 vPosition;" +
         "attribute vec2 aTexCoordinate;" +
@@ -71,233 +72,224 @@ public class VRRenderer implements GLSurfaceView.Renderer {
         "  vTexCoordinate = aTexCoordinate;" +
         "}";
 
-    private final String tunnelFragmentShaderCode =
+    /**
+     * Fragment shader with:
+     *  - icy blue-white tint (cool cave atmosphere)
+     *  - subtle vignette darkening at UV edges for depth
+     *  - uOffset scrolls UV during MOVE burst for motion feel
+     */
+    private static final String FRAG_SRC =
         "precision mediump float;" +
         "uniform sampler2D uTexture;" +
         "uniform float uAlphaMultiplier;" +
         "uniform float uOffset;" +
         "varying vec2 vTexCoordinate;" +
         "void main() {" +
-        "  vec2 scrolledTexCoord = vec2(vTexCoordinate.x, vTexCoordinate.y + uOffset);" +
-        "  vec4 texColor = texture2D(uTexture, scrolledTexCoord);" +
-        "  if (texColor.a < 0.1) discard;" +
-        "  gl_FragColor = texColor * vec4(1.0, 1.0, 1.0, uAlphaMultiplier);" +
+        "  vec2 uv = vec2(vTexCoordinate.x, vTexCoordinate.y + uOffset);" +
+        "  vec4 texColor = texture2D(uTexture, uv);" +
+        "  if (texColor.a < 0.05) discard;" +
+        // Ice-blue tint: subtly cool the photo toward glacial blues
+        "  vec3 iceTint = vec3(0.82, 0.92, 1.0);" +
+        "  vec3 tinted = texColor.rgb * iceTint;" +
+        // Vignette: darken toward edges of each tile for depth
+        "  vec2 tileUV = fract(uv);" +
+        "  float vig = 1.0 - smoothstep(0.3, 0.5, max(abs(tileUV.x - 0.5), abs(tileUV.y - 0.5)));" +
+        "  vig = mix(0.55, 1.0, vig);" +
+        "  gl_FragColor = vec4(tinted * vig, texColor.a * uAlphaMultiplier);" +
         "}";
 
-    public VRRenderer(Context context, SensorHandler sensorHandler, InteractionManager interactionManager) {
-        this.context = context;
-        this.sensorHandler = sensorHandler;
+    // ── Constructor ────────────────────────────────────────────────────────
+    public VRRenderer(Context context, SensorHandler sensorHandler,
+                      InteractionManager interactionManager) {
+        this.context            = context;
+        this.sensorHandler      = sensorHandler;
         this.interactionManager = interactionManager;
     }
 
+    // ── Public API ─────────────────────────────────────────────────────────
+
+    /** Switch the displayed cave scene (0–3). Called between frost transitions. */
+    public void setScene(int sceneIndex) {
+        if (sceneIndex >= 0 && sceneIndex < sceneTextureIds.length) {
+            currentScene = sceneIndex;
+        }
+    }
+
+    /** Trigger a visual velocity burst (called by MOVE button and MoveServer). */
     public void moveForward() {
-        // Record direction of burst
         visualYaw = (float) Math.toRadians(sensorHandler.getYaw());
-        // Boost visual velocity!
-        visualVelocity += 2.0f; 
+        visualVelocity += 1.5f;
     }
 
-    private int loadShader(int type, String shaderCode){
-        int shader = GLES20.glCreateShader(type);
-        GLES20.glShaderSource(shader, shaderCode);
-        GLES20.glCompileShader(shader);
-        return shader;
-    }
-
+    // ── GLSurfaceView.Renderer ─────────────────────────────────────────────
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-        // Cavern Ambient Color: Warm Earthy Gray/Brown
-        GLES20.glClearColor(0.12f, 0.10f, 0.08f, 1.0f);
-        GLES20.glDisable(GLES20.GL_CULL_FACE); // Show both faces of cave walls
+        GLES20.glClearColor(0.04f, 0.08f, 0.14f, 1.0f); // deep icy dark blue
+        GLES20.glDisable(GLES20.GL_CULL_FACE);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 
-        // Procedural brownish stone texture — no image asset required
-        caveTextureId = TextureHelper.generateCaveStoneTexture();
-        caveRoom = new CaveRoom();
+        // ── Scene textures using real ice cave photos ────────────────────────
+        // Scene 0: Dark tunnel — entering the cave
+        // Scene 1: Close-up icicle curtains (drippings)
+        // Scene 2: Dense icicle ceiling (drippings 2)
+        // Scene 3: View from inside cave looking outward
+        sceneTextureIds[0] = TextureHelper.loadTexture(context, R.drawable.cave_entering);
+        sceneTextureIds[1] = TextureHelper.loadTexture(context, R.drawable.cave_drippingings);
+        sceneTextureIds[2] = TextureHelper.loadTexture(context, R.drawable.cave_drippingings2);
+        sceneTextureIds[3] = TextureHelper.loadTexture(context, R.drawable.fromcave_outside_view);
 
-        tunnelBillboard = new ImageBillboard();
-        
-        int tVertexShader = loadShader(GLES20.GL_VERTEX_SHADER, tunnelVertexShaderCode);
-        int tFragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, tunnelFragmentShaderCode);
-        tunnelShaderProgram = GLES20.glCreateProgram();
-        GLES20.glAttachShader(tunnelShaderProgram, tVertexShader);
-        GLES20.glAttachShader(tunnelShaderProgram, tFragmentShader);
-        GLES20.glLinkProgram(tunnelShaderProgram);
+        // Large inside-out sphere (radius 30, 48 rings × 96 sectors for smooth photo mapping)
+        caveSphere = new Sphere(30f, 48, 96);
+
+        // Build shader program
+        tunnelShaderProgram = buildProgram(VERT_SRC, FRAG_SRC);
 
         crosshair = new Crosshair();
-        
-        mushroomTexId = TextureHelper.generateEmojiTexture("🍄");
-        plantTexId = TextureHelper.generateEmojiTexture("🌿");
-        fungusTexId = TextureHelper.generateEmojiTexture("☠️");
-
-        // Scatter random objects around the cave immediately
-        Random rand = new Random();
-        GameObject.Type[] types = GameObject.Type.values();
-        for (int i = 0; i < objects.length; i++) {
-            float rx = (rand.nextFloat() * 40f) - 20f;
-            float rz = (rand.nextFloat() * 40f) - 20f;
-            
-            // Prevent spawning directly on the origin camera (inside the player)
-            if (Math.abs(rx) < 2f) rx += 2f;
-            if (Math.abs(rz) < 2f) rz += 2f;
-            
-            GameObject.Type t = types[rand.nextInt(types.length)];
-            objects[i] = new GameObject(rx, 0f, rz, t);
-        }
     }
 
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
-        this.width = width;
+        this.width  = width;
         this.height = height;
-
         GLES20.glViewport(0, 0, width, height);
 
-        // Aspect ratio for half the screen
-        float ratio = (float) (width / 2) / height;
-        Matrix.perspectiveM(leftProjectionMatrix, 0, 75f, ratio, 0.1f, 100f);
-        Matrix.perspectiveM(rightProjectionMatrix, 0, 75f, ratio, 0.1f, 100f);
-        
-        // UI orthographic projection (Origin at top-left 0,0) mapped accurately to pixel densities
-        Matrix.orthoM(uiProjectionMatrix, 0, 0, width / 2, height, 0, -1, 1);
+        float ratio = (float)(width / 2) / height;
+        Matrix.perspectiveM(leftProjectionMatrix,  0, 75f, ratio, 0.1f, 200f);
+        Matrix.perspectiveM(rightProjectionMatrix, 0, 75f, ratio, 0.1f, 200f);
+        Matrix.orthoM(uiProjectionMatrix, 0, 0, width / 2f, height, 0, -1, 1);
     }
 
     @Override
     public void onDrawFrame(GL10 unused) {
-        // Integrate visual velocity for scrolling
+        // Integrate visual velocity
         totalVisualDistance += visualVelocity * 0.05f;
-        // Decay velocity for smooth stop
-        visualVelocity *= 0.92f;
+        visualVelocity      *= 0.92f;
         if (visualVelocity < 0.01f) visualVelocity = 0f;
-        
-        // camX / camZ remain at 0 per "static camera" instruction
-        camX = 0f;
-        camZ = 0f;
-        
-        // Pass Gaze targeting boolean direct to internal crosshair rendering!
+
         if (crosshair != null) {
-            crosshair.setTargeting(interactionManager.isTargeting());
+            crosshair.setTargeting(false); // no gaze targeting in exploration mode
         }
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        float pitchInfo = sensorHandler.getPitch();
-        float yawInfo = sensorHandler.getYaw();
+        float pitchRad = (float) Math.toRadians(sensorHandler.getPitch());
+        float yawRad   = (float) Math.toRadians(sensorHandler.getYaw());
 
-        // Convert to radians to compute look vectors
-        float yawRad = (float) Math.toRadians(yawInfo);
-        float pitchRad = (float) Math.toRadians(pitchInfo);
+        float fX = (float)(-Math.sin(yawRad) * Math.cos(pitchRad));
+        float fY = (float)(Math.sin(-pitchRad));
+        float fZ = (float)(-Math.cos(yawRad) * Math.cos(pitchRad));
 
-        float forwardX = (float) (-Math.sin(yawRad) * Math.cos(pitchRad));
-        float forwardY = (float) Math.sin(-pitchRad);
-        float forwardZ = (float) (-Math.cos(yawRad) * Math.cos(pitchRad));
+        float tX = fX, tY = CAM_Y + fY, tZ = fZ;
 
-        float targetX = camX + forwardX;
-        float targetY = camY + forwardY;
-        float targetZ = camZ + forwardZ;
-
-        // Up vector (assuming purely vertical Y-up most of the time is safe enough given limits)
-        float upX = 0f;
-        float upY = 1f;
-        float upZ = 0f;
-
-        // Draw Left Eye
+        // Left eye
         GLES20.glViewport(0, 0, width / 2, height);
-        float leftOffX =  (float) Math.cos(yawRad) * EYE_OFFSET; 
-        float leftOffZ = (float) -Math.sin(yawRad) * EYE_OFFSET; 
-        Matrix.setLookAtM(viewMatrix, 0, 
-                camX - leftOffX, camY, camZ - leftOffZ, 
-                targetX - leftOffX, targetY, targetZ - leftOffZ, 
-                upX, upY, upZ);
+        float lox = (float) Math.cos(yawRad) * EYE_OFFSET;
+        float loz = (float)-Math.sin(yawRad) * EYE_OFFSET;
+        Matrix.setLookAtM(viewMatrix, 0,
+            -lox, CAM_Y, -loz,
+            tX - lox, tY, tZ - loz,
+            0f, 1f, 0f);
         Matrix.multiplyMM(vPMatrix, 0, leftProjectionMatrix, 0, viewMatrix, 0);
-        drawScene(vPMatrix, forwardX, forwardY, forwardZ);
+        drawScene(vPMatrix);
         drawUI();
 
-        // Draw Right Eye
+        // Right eye
         GLES20.glViewport(width / 2, 0, width / 2, height);
-        float rightOffX = (float) -Math.cos(yawRad) * EYE_OFFSET; 
-        float rightOffZ = (float) Math.sin(yawRad) * EYE_OFFSET;
-        Matrix.setLookAtM(viewMatrix, 0, 
-                camX - rightOffX, camY, camZ - rightOffZ, 
-                targetX - rightOffX, targetY, targetZ - rightOffZ, 
-                upX, upY, upZ);
+        float rox = (float)-Math.cos(yawRad) * EYE_OFFSET;
+        float roz = (float) Math.sin(yawRad) * EYE_OFFSET;
+        Matrix.setLookAtM(viewMatrix, 0,
+            -rox, CAM_Y, -roz,
+            tX - rox, tY, tZ - roz,
+            0f, 1f, 0f);
         Matrix.multiplyMM(vPMatrix, 0, rightProjectionMatrix, 0, viewMatrix, 0);
-        drawScene(vPMatrix, forwardX, forwardY, forwardZ);
+        drawScene(vPMatrix);
         drawUI();
     }
 
+    // ── Draw helpers ───────────────────────────────────────────────────────
+
+    private void drawScene(float[] vpMatrix) {
+        GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+
+        // Sphere centred on camera (moves with camera for infinite-sky feel)
+        Matrix.setIdentityM(modelMatrix, 0);
+        // Subtle breathing scale on move
+        float scale = 1.0f + (float)(Math.sin(totalVisualDistance * 0.4f) * 0.015f);
+        Matrix.scaleM(modelMatrix, 0, scale, scale, scale);
+        Matrix.multiplyMM(scratchMatrix, 0, vpMatrix, 0, modelMatrix, 0);
+
+        // UV scroll driven by motion burst
+        float uOffset = totalVisualDistance * 0.008f;
+
+        caveSphere.draw(tunnelShaderProgram, scratchMatrix,
+            sceneTextureIds[currentScene], 1.0f, uOffset);
+
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+    }
+
     private void drawUI() {
+        if (crosshair == null) return;
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         Matrix.setIdentityM(uiModelMatrix, 0);
-        float eyeWidth = width / 2f;
-        Matrix.translateM(uiModelMatrix, 0, eyeWidth / 2f, height / 2f, 0f);
+        float eyeW = width / 2f;
+        Matrix.translateM(uiModelMatrix, 0, eyeW / 2f, height / 2f, 0f);
         Matrix.multiplyMM(uiMVPMatrix, 0, uiProjectionMatrix, 0, uiModelMatrix, 0);
         crosshair.draw(uiMVPMatrix);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
     }
 
-    private void drawScene(float[] projectionAndViewMatrix, float fX, float fY, float fZ) {
-        GLES20.glDisable(GLES20.GL_DEPTH_TEST);
+    // ── Shader utilities ───────────────────────────────────────────────────
 
-        // Place the cave room centred on the camera
-        Matrix.setIdentityM(modelMatrix, 0);
-        Matrix.translateM(modelMatrix, 0, camX, camY, camZ);
+    private int buildProgram(String vertSrc, String fragSrc) {
+        int vert = loadShader(GLES20.GL_VERTEX_SHADER,   vertSrc);
+        int frag = loadShader(GLES20.GL_FRAGMENT_SHADER, fragSrc);
+        int prog = GLES20.glCreateProgram();
+        GLES20.glAttachShader(prog, vert);
+        GLES20.glAttachShader(prog, frag);
+        GLES20.glLinkProgram(prog);
+        return prog;
+    }
 
-        // Subtle ambient pulse on Move (scale breathes slightly)
-        float scaleMod = 1.0f + ((float) Math.sin(totalVisualDistance * 0.5f) * 0.03f);
-        Matrix.scaleM(modelMatrix, 0, scaleMod, scaleMod, scaleMod);
+    private int loadShader(int type, String src) {
+        int shader = GLES20.glCreateShader(type);
+        GLES20.glShaderSource(shader, src);
+        GLES20.glCompileShader(shader);
+        return shader;
+    }
 
-        Matrix.multiplyMM(scratchMatrix, 0, projectionAndViewMatrix, 0, modelMatrix, 0);
+    /**
+     * Loads a drawable as a GL texture.
+     * Real PNG/JPG images load normally.
+     * XML shape drawables (placeholders) are detected via BitmapFactory bounds probe —
+     * they return outWidth==-1. In that case a solid icy-dark-blue 4×4 bitmap is used
+     * so the sphere renders as a dark tinted environment rather than nothing.
+     */
+    private int loadSafe(int resourceId) {
+        // Probe: does this resource decode as a real bitmap?
+        android.graphics.BitmapFactory.Options probe = new android.graphics.BitmapFactory.Options();
+        probe.inJustDecodeBounds = true;
+        android.graphics.BitmapFactory.decodeResource(context.getResources(), resourceId, probe);
 
-        // Draw the 4-wall + floor + ceiling cave enclosure with stone texture
-        caveRoom.draw(tunnelShaderProgram, scratchMatrix, caveTextureId);
-
-        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-
-        for(int i = 0; i < objects.length; i++) {
-            if (objects[i].isCollected) continue;
-
-            float moveScale = 0.5f; 
-            float dxVisual = (float) Math.sin(visualYaw) * totalVisualDistance * moveScale;
-            float dzVisual = (float) Math.cos(visualYaw) * totalVisualDistance * moveScale;
-
-            float ox = objects[i].x + dxVisual;
-            float oy = objects[i].y; 
-            float oz = objects[i].z + dzVisual;
-
-            if (ox > 15f) objects[i].x -= 30f;
-            if (ox < -15f) objects[i].x += 30f;
-            if (oz > 15f) objects[i].z -= 30f;
-            if (oz < -15f) objects[i].z += 30f;
-
-            // Updated position gaze check
-            float originalX = objects[i].x;
-            float originalZ = objects[i].z;
-            objects[i].x = ox;
-            objects[i].z = oz;
-            interactionManager.checkGaze(0f, camY, 0f, fX, fY, fZ, objects[i], i);
-            objects[i].x = originalX;
-            objects[i].z = originalZ;
-
-            float rotY = (float) Math.toDegrees(Math.atan2(ox, oz));
-
-            Matrix.setIdentityM(modelMatrix, 0);
-            Matrix.translateM(modelMatrix, 0, ox, oy + 0.5f, oz); 
-            Matrix.rotateM(modelMatrix, 0, rotY, 0f, 1f, 0f); 
-            
-            if (objects[i].type == GameObject.Type.EDIBLE_MUSHROOM) {
-                Matrix.scaleM(modelMatrix, 0, 0.5f, 0.5f, 0.5f);
-                Matrix.multiplyMM(scratchMatrix, 0, projectionAndViewMatrix, 0, modelMatrix, 0);
-                tunnelBillboard.draw(tunnelShaderProgram, scratchMatrix, mushroomTexId, 1.0f);
-            } else if (objects[i].type == GameObject.Type.CAVE_PLANT) {
-                Matrix.scaleM(modelMatrix, 0, 0.5f, 0.5f, 0.5f);
-                Matrix.multiplyMM(scratchMatrix, 0, projectionAndViewMatrix, 0, modelMatrix, 0);
-                tunnelBillboard.draw(tunnelShaderProgram, scratchMatrix, plantTexId, 1.0f);
-            } else if (objects[i].type == GameObject.Type.TOXIC_FUNGUS) {
-                Matrix.scaleM(modelMatrix, 0, 0.5f, 0.5f, 0.5f);
-                Matrix.multiplyMM(scratchMatrix, 0, projectionAndViewMatrix, 0, modelMatrix, 0);
-                tunnelBillboard.draw(tunnelShaderProgram, scratchMatrix, fungusTexId, 1.0f);
-            }
+        if (probe.outWidth > 0 && probe.outHeight > 0) {
+            // Real PNG/JPG image — load it as a texture
+            return TextureHelper.loadTexture(context, resourceId);
         }
+
+        // XML placeholder or missing bitmap — generate an in-memory icy-blue tile
+        android.graphics.Bitmap fallback = android.graphics.Bitmap.createBitmap(4, 4,
+                android.graphics.Bitmap.Config.ARGB_8888);
+        fallback.eraseColor(0xFF0A1828); // dark ice blue
+        int[] handle = new int[1];
+        android.opengl.GLES20.glGenTextures(1, handle, 0);
+        if (handle[0] != 0) {
+            android.opengl.GLES20.glBindTexture(android.opengl.GLES20.GL_TEXTURE_2D, handle[0]);
+            android.opengl.GLES20.glTexParameteri(android.opengl.GLES20.GL_TEXTURE_2D,
+                    android.opengl.GLES20.GL_TEXTURE_MIN_FILTER, android.opengl.GLES20.GL_LINEAR);
+            android.opengl.GLES20.glTexParameteri(android.opengl.GLES20.GL_TEXTURE_2D,
+                    android.opengl.GLES20.GL_TEXTURE_MAG_FILTER, android.opengl.GLES20.GL_LINEAR);
+            android.opengl.GLUtils.texImage2D(android.opengl.GLES20.GL_TEXTURE_2D, 0, fallback, 0);
+            fallback.recycle();
+        }
+        return handle[0];
     }
 }

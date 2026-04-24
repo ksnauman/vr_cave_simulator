@@ -1,74 +1,226 @@
 package com.example.vrdesert;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ProgressBar;
 import android.opengl.GLSurfaceView;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class MainActivity extends AppCompatActivity implements InteractionManager.InteractionListener {
+public class MainActivity extends AppCompatActivity
+        implements InteractionManager.InteractionListener {
 
+    // ── GL / VR ────────────────────────────────────────────────────────────
     private GLSurfaceView glSurfaceView;
-    private VRRenderer vrRenderer;
+    private VRRenderer    vrRenderer;
     private SensorHandler sensorHandler;
-    private InteractionManager interactionManager;
+    private MoveServer    moveServer;
 
-    private TextView feedbackLeft, feedbackRight;
-    private TextView resultLeft, resultRight;
+    // ── UI ─────────────────────────────────────────────────────────────────
+    private TextView movesCounter;
+    private TextView sceneLabel;
+    private View     sceneTransitionOverlay;
+    private View     infoCardContainer;
+    private TextView infoCardTitle;
+    private TextView infoCardBody;
 
-    private AudioEngine audioEngine;
-    private GameManager gameManager;
-    private MoveServer moveServer;
+    // ── Move state ─────────────────────────────────────────────────────────
+    private int movesLeft = 3;
+    private int currentScene = 0;   // 0..3
+    private boolean transitioning  = false;
 
+    // ── Scene data ─────────────────────────────────────────────────────────
+    private static final String[] SCENE_LABELS = {
+        "The Frozen Gateway",       // cave_entering.jpg  — dark tunnel, entry point
+        "The Icicle Curtains",      // cave_drippingings.jpg — close-up frozen waterfall
+        "The Crystal Cathedral",    // cave_drippingings2.jpg — dense icicle ceiling
+        "The Blue Window"           // fromcave_outside_view.jpg — looking out to world
+    };
+
+    // Insight data: [scene 0‑3][button 0‑2][title, body]
+    private static final String[][][] INSIGHTS = {
+        // ── Scene 0 — The Frozen Gateway (dark ice tunnel, silhouettes walking in) ──
+        {
+            { "❄ How Tunnels Form",
+              "This perfectly oval passage was carved not by hand but by meltwater boring through glacial ice over decades. Liquid water always finds the smallest weakness in solid ice — drilling downward and outward until a passage like this forms." },
+            { "💡 The Light Ahead",
+              "That circle of daylight at the tunnel's far end is the strongest magnet in any ice cave. Ice transmits blue wavelengths most efficiently, which is why the glow has an ethereal, almost supernatural quality compared to ordinary sunlight." },
+            { "🧊 Temperature Drop",
+              "As you step inside, the temperature drops 10–15°C within a few metres. The ice surrounding you acts as an insulator far more effective than concrete — maintaining a near-constant subzero environment regardless of what the weather is doing outside." }
+        },
+        // ── Scene 1 — The Icicle Curtains (frozen waterfall columns, dark rock behind) ──
+        {
+            { "🏔 Frozen Waterfalls",
+              "What you see here are called ice curtains or frozen waterfalls. When water seeps through cracks in the rock above and meets subzero cave air, it freezes mid-flow. Each column grew one freeze-cycle at a time — some of these formations are decades old." },
+            { "🪨 Rock Behind Ice",
+              "Notice the dark layered rock visible behind the ice. These are sedimentary strata — each horizontal band represents thousands of years of geological sedimentation. The ice clinging to them is a newcomer; the rock itself may be 400 million years old." },
+            { "⚖ Weight of Ice",
+              "The largest ice curtain columns you see can weigh over one tonne each. Despite their delicate, translucent appearance, they are structurally dense — the ice near the base is compressed so hard that it contains almost no air bubbles at all." }
+        },
+        // ── Scene 2 — The Crystal Cathedral (thousands of icicles hanging from ceiling) ──
+        {
+            { "💧 Icicle Growth",
+              "Each single icicle here grows roughly 1 centimetre per day under ideal conditions. A water droplet arrives, partially freezes, and leaves a thin ice ring before the next drop comes. The largest ones here may have been growing for 10 years or more." },
+            { "🔵 Why Blue Light?",
+              "The ethereal blue-grey light filtering through the ceiling comes from the physics of glacial ice. Dense ice absorbs red and yellow wavelengths and lets only blue pass through. The deeper and denser the ice, the purer and more intense the blue." },
+            { "🤫 Total Silence",
+              "Ice caves are among the quietest places on Earth. The ice and rock around you absorb nearly all sound — no echo, no ambient hum. Scientists have measured near-zero decibel levels in chambers like this. Many first-time visitors hear their own heartbeat for the first time." }
+        },
+        // ── Scene 3 — The Blue Window (looking out from cave interior to outside world) ──
+        {
+            { "🪟 The Portal Effect",
+              "This view — looking out from the cave's inner chamber — is one of the most photographed compositions in glacial photography. The blue glacial ice frames the external world like a stained-glass window, creating a stark contrast between frozen stillness inside and life outside." },
+            { "🌋 Outside the Ice",
+              "What you see beyond the cave mouth is Iceland's volcanic rock plain, covered in a thin frost layer. The glacier you are standing inside sits directly atop ancient lava flows — a river of compacted ice, thousands of years old, moving millimetres per day toward the sea." },
+            { "⏳ Ice as History",
+              "The ice forming the ceiling above you may be 500–1,000 years old. Climate scientists drill ice cores from glaciers like this to study ancient atmospheres — each compressed layer is a year of snowfall, preserving bubbles of air from centuries gone by." }
+        }
+    };
+
+
+    // ── Lifecycle ──────────────────────────────────────────────────────────
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // GL Surface
         glSurfaceView = findViewById(R.id.glSurfaceView);
-
-        // Require OpenGL ES 2.0
         glSurfaceView.setEGLContextClientVersion(2);
 
         sensorHandler = new SensorHandler(this);
-        interactionManager = new InteractionManager(this);
+        // InteractionManager kept minimal — no collectibles
+        InteractionManager interactionManager = new InteractionManager(
+            (id, type) -> { /* no-op: no collectible items */ });
 
         vrRenderer = new VRRenderer(this, sensorHandler, interactionManager);
         glSurfaceView.setRenderer(vrRenderer);
-        
-        // Render only when data changes or animate continuously
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
-        feedbackLeft = findViewById(R.id.feedbackLeft);
-        feedbackRight = findViewById(R.id.feedbackRight);
-        resultLeft = findViewById(R.id.resultLeft);
-        resultRight = findViewById(R.id.resultRight);
+        // UI references
+        movesCounter           = findViewById(R.id.movesCounter);
+        sceneLabel             = findViewById(R.id.sceneLabel);
+        sceneTransitionOverlay = findViewById(R.id.sceneTransitionOverlay);
+        infoCardContainer      = findViewById(R.id.infoCardContainer);
+        infoCardTitle          = findViewById(R.id.infoCardTitle);
+        infoCardBody           = findViewById(R.id.infoCardBody);
 
-        audioEngine = new AudioEngine();
-        audioEngine.startCaveAmbiance(); // Cavern rumbles
+        updateMovesCounter();
+        updateSceneLabel();
 
-        ProgressBar healthBarLeft = findViewById(R.id.healthBarLeft);
-        ProgressBar healthBarRight = findViewById(R.id.healthBarRight);
-        TextView timerLeft = findViewById(R.id.timerLeft);
-        TextView timerRight = findViewById(R.id.timerRight);
-        gameManager = new GameManager(this, healthBarLeft, healthBarRight, timerLeft, timerRight);
-
+        // MOVE button
         Button btnMove = findViewById(R.id.btnMove);
-        btnMove.setOnClickListener(v -> vrRenderer.moveForward());
+        btnMove.setOnClickListener(v -> attemptMove());
 
-        // Spawn Native Web Controller Server targeting the Renderer on port 8080!
+        // Insight buttons
+        Button btn1 = findViewById(R.id.btnInsight1);
+        Button btn2 = findViewById(R.id.btnInsight2);
+        Button btn3 = findViewById(R.id.btnInsight3);
+
+        btn1.setOnClickListener(v -> showInsight(0));
+        btn2.setOnClickListener(v -> showInsight(1));
+        btn3.setOnClickListener(v -> showInsight(2));
+
+        // Update insight button labels for current scene
+        updateInsightButtonLabels();
+
+        // Info card close
+        Button btnClose = findViewById(R.id.btnCloseInfo);
+        btnClose.setOnClickListener(v -> hideInfoCard());
+
+        // Remote controller server
         moveServer = new MoveServer(vrRenderer);
         moveServer.start();
     }
 
+    // ── Move Logic ─────────────────────────────────────────────────────────
+    public void attemptMove() {
+        if (transitioning) return;
+
+        if (movesLeft <= 0) {
+            Toast.makeText(this, "You've reached the heart of the cave", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        movesLeft--;
+        currentScene = Math.min(currentScene + 1, 3);
+        transitioning = true;
+
+        // Frost-white transition animation
+        sceneTransitionOverlay.setVisibility(View.VISIBLE);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 0f, 1f);
+        fadeIn.setDuration(350);
+        fadeIn.start();
+
+        sceneTransitionOverlay.postDelayed(() -> {
+            // Switch scene in renderer
+            vrRenderer.setScene(currentScene);
+            vrRenderer.moveForward(); // keeps visual motion burst
+
+            // Update UI
+            updateMovesCounter();
+            updateSceneLabel();
+            updateInsightButtonLabels();
+
+            // Fade overlay back out
+            ObjectAnimator fadeOut = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 1f, 0f);
+            fadeOut.setDuration(500);
+            fadeOut.start();
+            sceneTransitionOverlay.postDelayed(() -> {
+                sceneTransitionOverlay.setVisibility(View.GONE);
+                transitioning = false;
+            }, 500);
+        }, 380);
+    }
+
+    // ── Insight Cards ──────────────────────────────────────────────────────
+    private void showInsight(int buttonIndex) {
+        String[] data = INSIGHTS[currentScene][buttonIndex];
+        infoCardTitle.setText(data[0]);
+        infoCardBody.setText(data[1]);
+
+        infoCardContainer.setAlpha(0f);
+        infoCardContainer.setVisibility(View.VISIBLE);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(infoCardContainer, "alpha", 0f, 1f);
+        fadeIn.setDuration(250);
+        fadeIn.start();
+    }
+
+    private void hideInfoCard() {
+        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(infoCardContainer, "alpha", 1f, 0f);
+        fadeOut.setDuration(200);
+        fadeOut.start();
+        infoCardContainer.postDelayed(() -> infoCardContainer.setVisibility(View.GONE), 200);
+    }
+
+    // ── UI helpers ─────────────────────────────────────────────────────────
+    private void updateMovesCounter() {
+        movesCounter.setText("Moves: " + movesLeft + " / 3");
+    }
+
+    private void updateSceneLabel() {
+        sceneLabel.setText(SCENE_LABELS[currentScene]);
+    }
+
+    private void updateInsightButtonLabels() {
+        // Update the button text to match the scene's insight topics
+        String[][] sceneInsights = INSIGHTS[currentScene];
+        Button btn1 = findViewById(R.id.btnInsight1);
+        Button btn2 = findViewById(R.id.btnInsight2);
+        Button btn3 = findViewById(R.id.btnInsight3);
+        if (btn1 != null) btn1.setText(sceneInsights[0][0].split(" ")[0] + " " + sceneInsights[0][0].split(" ")[1]);
+        if (btn2 != null) btn2.setText(sceneInsights[1][0].split(" ")[0] + " " + sceneInsights[1][0].split(" ")[1]);
+        if (btn3 != null) btn3.setText(sceneInsights[2][0].split(" ")[0] + " " + sceneInsights[2][0].split(" ")[1]);
+    }
+
+    // ── Lifecycle: GL + Sensor ─────────────────────────────────────────────
     @Override
     protected void onResume() {
         super.onResume();
         glSurfaceView.onResume();
         sensorHandler.start();
-        if (gameManager != null) gameManager.startHealthDecay();
     }
 
     @Override
@@ -76,71 +228,15 @@ public class MainActivity extends AppCompatActivity implements InteractionManage
         super.onPause();
         glSurfaceView.onPause();
         sensorHandler.stop();
-        if (gameManager != null) gameManager.stopHealthDecay();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (audioEngine != null) {
-            audioEngine.stopAudio();
-        }
-        if (moveServer != null) {
-            moveServer.stopServer();
-        }
+        if (moveServer != null) moveServer.stopServer();
     }
 
-    @Override
-    public void onObjectCollected(int objectId, GameObject.Type type) {
-        if (gameManager.isGameLocked()) return; // Stop executing collection behaviors if final win-state initiated
-
-        audioEngine.playCollectionSound(); // Ping!
-        
-        // Pass to logic threshold checker
-        gameManager.processItemCollection(type);
-        
-        switch (type) {
-            case EDIBLE_MUSHROOM: showFeedback("+10 Health", true); break;
-            case CAVE_PLANT: showFeedback("+5 Health", true); break;
-            case TOXIC_FUNGUS: showFeedback("-20 Health", false); break;
-        }
-    }
-
-    private void showFeedback(String msg, boolean positive) {
-        int color = positive ? 0xFF00FF00 : 0xFFFF0000;
-        feedbackLeft.setTextColor(color);
-        feedbackRight.setTextColor(color);
-        feedbackLeft.setText(msg);
-        feedbackRight.setText(msg);
-        
-        feedbackLeft.setVisibility(android.view.View.VISIBLE);
-        feedbackRight.setVisibility(android.view.View.VISIBLE);
-        feedbackLeft.setAlpha(1f);
-        feedbackRight.setAlpha(1f);
-        
-        feedbackLeft.animate().alpha(0f).setStartDelay(1000).setDuration(500).start();
-        feedbackRight.animate().alpha(0f).setStartDelay(1000).setDuration(500).start();
-    }
-
-    public void showWin() {
-        runOnUiThread(() -> {
-            resultLeft.setText("YOU SURVIVED");
-            resultRight.setText("YOU SURVIVED");
-            resultLeft.setTextColor(0xFF00FF00); // Green
-            resultRight.setTextColor(0xFF00FF00);
-            resultLeft.setVisibility(android.view.View.VISIBLE);
-            resultRight.setVisibility(android.view.View.VISIBLE);
-        });
-    }
-
-    public void showLose() {
-        runOnUiThread(() -> {
-            resultLeft.setText("GAME OVER");
-            resultRight.setText("GAME OVER");
-            resultLeft.setTextColor(0xFFFF0000); // Red
-            resultRight.setTextColor(0xFFFF0000);
-            resultLeft.setVisibility(android.view.View.VISIBLE);
-            resultRight.setVisibility(android.view.View.VISIBLE);
-        });
-    }
+    // ── Stub required by InteractionManager.InteractionListener ───────────
+    // (kept so the interface is implemented — no actual items to collect)
+    public void onObjectCollected(int objectId, GameObject.Type type) { }
 }

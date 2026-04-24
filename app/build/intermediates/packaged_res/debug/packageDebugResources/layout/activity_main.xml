@@ -2,176 +2,172 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="#050C14">
 
+    <!-- GL VR Surface -->
     <android.opengl.GLSurfaceView
         android:id="@+id/glSurfaceView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Minimal Overlay UI -->
-    <LinearLayout
+    <!-- Frost scene-transition overlay -->
+    <View
+        android:id="@+id/sceneTransitionOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:background="#E8F4FF"
+        android:alpha="0"
+        android:visibility="gone" />
 
-        <!-- Left Eye Container -->
-        <RelativeLayout
-            android:layout_width="0dp"
+    <!-- Info Card Overlay (centred, both eyes see it) -->
+    <FrameLayout
+        android:id="@+id/infoCardContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <!-- Dim backdrop -->
+        <View
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:background="#CC000000" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="90dp"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/timerLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Time: 60s"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:shadowColor="#000000"
-                    android:shadowRadius="3"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Health"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:shadowColor="#000000"
-                    android:shadowRadius="3"
-                    android:layout_marginBottom="4dp"/>
-
-                <ProgressBar
-                    android:id="@+id/healthBarLeft"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:max="100"
-                    android:progress="30"
-                    android:progressTint="#00FF00" />
-            </LinearLayout>
+        <!-- Card -->
+        <LinearLayout
+            android:layout_width="500dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:background="#E0050C14"
+            android:padding="24dp">
 
             <TextView
-                android:id="@+id/feedbackLeft"
+                android:id="@+id/infoCardTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="30dp"
+                android:textColor="#E8F4FF"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:shadowColor="#000000"
-                android:shadowRadius="3"
-                android:visibility="invisible" />
+                android:layout_marginBottom="12dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#3090C8E8"
+                android:layout_marginBottom="14dp" />
 
             <TextView
-                android:id="@+id/resultLeft"
-                android:layout_width="wrap_content"
+                android:id="@+id/infoCardBody"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textColor="#FFFFFF"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:shadowColor="#000000"
-                android:shadowRadius="5"
-                android:visibility="invisible" />
-        </RelativeLayout>
+                android:textColor="#B0D8F0"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.5"
+                android:layout_marginBottom="20dp" />
 
-        <!-- Right Eye Container -->
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <LinearLayout
+            <Button
+                android:id="@+id/btnCloseInfo"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="90dp"
-                android:gravity="center">
+                android:layout_height="40dp"
+                android:layout_gravity="end"
+                android:text="✕  Close"
+                android:textColor="#A0C8E8"
+                android:textSize="13sp"
+                android:backgroundTint="#1A2A3A" />
+        </LinearLayout>
+    </FrameLayout>
 
-                <TextView
-                    android:id="@+id/timerRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Time: 60s"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:shadowColor="#000000"
-                    android:shadowRadius="3"
-                    android:layout_marginBottom="8dp"/>
+    <!-- Bottom Controls Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Health"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:shadowColor="#000000"
-                    android:shadowRadius="3"
-                    android:layout_marginBottom="4dp"/>
+        <!-- Moves counter -->
+        <TextView
+            android:id="@+id/movesCounter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Moves: 3 / 3"
+            android:textColor="#80B0D0"
+            android:textSize="12sp"
+            android:letterSpacing="0.1"
+            android:layout_marginBottom="6dp" />
 
-                <ProgressBar
-                    android:id="@+id/healthBarRight"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:max="100"
-                    android:progress="30"
-                    android:progressTint="#00FF00" />
-            </LinearLayout>
+        <!-- Insight buttons row -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="8dp">
 
-            <TextView
-                android:id="@+id/feedbackRight"
+            <Button
+                android:id="@+id/btnInsight1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginTop="30dp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:shadowColor="#000000"
-                android:shadowRadius="3"
-                android:visibility="invisible" />
+                android:layout_height="36dp"
+                android:text="❄ Ice"
+                android:textColor="#C8E8FF"
+                android:textSize="12sp"
+                android:backgroundTint="#1A3A5A"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
 
-            <TextView
-                android:id="@+id/resultRight"
+            <Button
+                android:id="@+id/btnInsight2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:textColor="#FFFFFF"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:shadowColor="#000000"
-                android:shadowRadius="5"
-                android:visibility="invisible" />
-        </RelativeLayout>
+                android:layout_height="36dp"
+                android:text="💎 Crystal"
+                android:textColor="#C8E8FF"
+                android:textSize="12sp"
+                android:backgroundTint="#1A3A5A"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+
+            <Button
+                android:id="@+id/btnInsight3"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="🌬 Air"
+                android:textColor="#C8E8FF"
+                android:textSize="12sp"
+                android:backgroundTint="#1A3A5A"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp" />
+
+        </LinearLayout>
+
+        <!-- MOVE button -->
+        <Button
+            android:id="@+id/btnMove"
+            android:layout_width="160dp"
+            android:layout_height="48dp"
+            android:text="❄  MOVE"
+            android:textColor="#E8F4FF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:backgroundTint="#1A4A7A" />
+
     </LinearLayout>
 
-    <!-- Move Button (Bottom Center) -->
-    <Button
-        android:id="@+id/btnMove"
-        android:layout_width="120dp"
-        android:layout_height="48dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="24dp"
-        android:alpha="0.7"
-        android:backgroundTint="#66000000"
-        android:text="MOVE"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+    <!-- Scene label (top centre) -->
+    <TextView
+        android:id="@+id/sceneLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="The Frozen Gateway"
+        android:textColor="#90C8E8"
+        android:textSize="13sp"
+        android:letterSpacing="0.12"
+        android:shadowColor="#60000000"
+        android:shadowRadius="4" />
 
 </FrameLayout>

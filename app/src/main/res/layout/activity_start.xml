@@ -1,25 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="#222222">
+    android:background="#0A1828">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Explore the Cave"
-        android:textSize="32sp"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:layout_marginBottom="40dp" />
+    <!-- Background image: real ice cave entrance photo -->
+    <ImageView
+        android:id="@+id/selectorBg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/cave_entranceorexit"
+        android:scaleType="centerCrop" />
 
-    <Button
-        android:id="@+id/btnBegin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Begin"
-        android:textSize="18sp"
-        android:padding="16dp" />
-</LinearLayout>
+    <!-- Main Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="60dp"
+        android:paddingEnd="60dp">
+
+        <!-- App Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ICE CAVE"
+            android:textColor="#FFFFFF"
+            android:textSize="56sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.12"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="V R   E X P L O R E R"
+            android:textColor="#B0D8F0"
+            android:textSize="16sp"
+            android:letterSpacing="0.35"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="100dp"
+            android:layout_height="2dp"
+            android:background="#6090C8E8"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="28dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Journey into frozen silence"
+            android:textColor="#D0EAF8"
+            android:textSize="16sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="44dp" />
+
+        <!-- Enter Button -->
+        <Button
+            android:id="@+id/btnEnterCave"
+            android:layout_width="220dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_horizontal"
+            android:text="ENTER THE CAVE"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06"
+            android:backgroundTint="#2060A0"
+            android:layout_marginBottom="18dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3 moves  |  4 scenes  |  immersive VR"
+            android:textColor="#7AAAC8"
+            android:textSize="12sp"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+
+    <!-- Frost transition overlay (for animation, starts invisible) -->
+    <View
+        android:id="@+id/frostOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        android:alpha="0"
+        android:visibility="gone" />
+
+</FrameLayout>

@@ -43,9 +43,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.vrdesert.StoryActivity"
-            android:screenOrientation="landscape" />
-        <activity
             android:name="com.example.vrdesert.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape" />

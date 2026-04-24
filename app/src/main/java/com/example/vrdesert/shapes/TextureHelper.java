@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
@@ -20,9 +21,15 @@ public class TextureHelper {
         GLES20.glGenTextures(1, textureHandle, 0);
         if (textureHandle[0] != 0) {
             final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inScaled = false; // No pre-scaling
-            final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
-            
+            options.inScaled = false;
+            Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
+
+            // Fallback: if the image file is missing, use a 1x1 icy-blue placeholder
+            if (bitmap == null) {
+                bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+                bitmap.setPixel(0, 0, 0xFF1A3A5A); // dark ice blue
+            }
+
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
@@ -49,7 +56,6 @@ public class TextureHelper {
             textPaint.setAntiAlias(true);
             textPaint.setTextAlign(android.graphics.Paint.Align.CENTER);
 
-            // Draw emoji exactly in center
             int xPos = (canvas.getWidth() / 2);
             int yPos = (int) ((canvas.getHeight() / 2) - ((textPaint.descent() + textPaint.ascent()) / 2));
             canvas.drawText(emoji, xPos, yPos, textPaint);
@@ -64,116 +70,187 @@ public class TextureHelper {
     }
 
     /**
-     * Procedurally generates a 512×512 brownish stone tile texture using Android Canvas.
+     * Generates an organic 512×512 cave rock texture using layered procedural noise.
      *
-     * Layers applied (bottom → top):
-     *  1. Warm brown base fill
-     *  2. Random stone-grain pixel noise (darker and lighter flecks)
-     *  3. Brick mortar lines (horizontal + vertical grid in grey)
-     *  4. Per-brick shading variation (slight brightness offset per cell)
-     *  5. Corner radial vignette (darkens edges for cave depth)
-     *
-     * The texture is uploaded with GL_REPEAT so it tiles on all cave surfaces.
+     * Layers (bottom → top):
+     *  1. Very dark base (near-black charcoal rock)
+     *  2. Large Voronoi-like rock panel patches (grey/brown variation)
+     *  3. Medium noise blobs to break up regularity
+     *  4. Fine pixel-level grain scatter
+     *  5. Natural crack lines (thin dark paths across the surface)
+     *  6. Moisture/mineral streak highlights (faint cool-toned lines)
+     *  7. Stalactite-drop shadow patches
+     *  8. Radial vignette to push edges darker
      */
     public static int generateCaveStoneTexture() {
         final int SIZE = 512;
-        // How many bricks per tile row and column
-        final int BRICK_COLS = 4;
-        final int BRICK_ROWS = 4;
-        final int MORTAR_PX  = 6;   // mortar line width in pixels
-
         Bitmap bmp = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
-        Random rng = new Random(42); // fixed seed for deterministic look
+        Random rng = new Random(7331); // deterministic seed
 
-        // ── 1. Base warm-brown fill ──────────────────────────────────────────
+        // ── 1. Dark charcoal rock base ──────────────────────────────────────
         Paint basePaint = new Paint();
-        basePaint.setColor(Color.rgb(107, 66, 38));  // #6B4226 earthy brown
+        basePaint.setColor(Color.rgb(28, 22, 18)); // near-black dark rock
         canvas.drawRect(0, 0, SIZE, SIZE, basePaint);
 
-        // ── 2. Stone grain noise ─────────────────────────────────────────────
-        Paint noisePaint = new Paint();
-        noisePaint.setStrokeWidth(1f);
-        for (int i = 0; i < SIZE * SIZE / 8; i++) {
-            int px = rng.nextInt(SIZE);
-            int py = rng.nextInt(SIZE);
-            // Randomly shift toward dark or light
-            int shift = rng.nextInt(3); // 0=dark, 1=mid, 2=light
-            if (shift == 0) {
-                noisePaint.setColor(Color.argb(80, 50, 28, 12));   // dark fleck
-            } else if (shift == 1) {
-                noisePaint.setColor(Color.argb(50, 90, 55, 30));   // mid grain
+        // ── 2. Large rock panel patches (Voronoi-style blobs) ───────────────
+        // Simulate natural rock facets: large irregular oval regions with
+        // slightly different grey/brown tones
+        Paint panelPaint = new Paint();
+        panelPaint.setAntiAlias(true);
+        panelPaint.setStyle(Paint.Style.FILL);
+        int NUM_PANELS = 28;
+        for (int i = 0; i < NUM_PANELS; i++) {
+            float cx = rng.nextFloat() * SIZE;
+            float cy = rng.nextFloat() * SIZE;
+            float rx = 30f + rng.nextFloat() * 90f;
+            float ry = 20f + rng.nextFloat() * 70f;
+            float angle = rng.nextFloat() * 360f;
+
+            // Rock panel colour: dark grey-brown variants
+            int rv = 38 + rng.nextInt(40);   // 38–78
+            int gv = 30 + rng.nextInt(28);   // 30–58
+            int bv = 22 + rng.nextInt(20);   // 22–42
+            panelPaint.setColor(Color.argb(90 + rng.nextInt(60), rv, gv, bv));
+
+            canvas.save();
+            canvas.translate(cx, cy);
+            canvas.rotate(angle);
+            canvas.drawOval(new RectF(-rx, -ry, rx, ry), panelPaint);
+            canvas.restore();
+        }
+
+        // ── 3. Medium noise blobs (break up flatness) ───────────────────────
+        Paint blobPaint = new Paint();
+        blobPaint.setAntiAlias(true);
+        blobPaint.setStyle(Paint.Style.FILL);
+        int NUM_BLOBS = 80;
+        for (int i = 0; i < NUM_BLOBS; i++) {
+            float cx = rng.nextFloat() * SIZE;
+            float cy = rng.nextFloat() * SIZE;
+            float r = 5f + rng.nextFloat() * 22f;
+            int bright = rng.nextInt(3);
+            if (bright == 0) {
+                // lighter stone highlight
+                blobPaint.setColor(Color.argb(50, 90, 72, 55));
+            } else if (bright == 1) {
+                // dark shadow pocket
+                blobPaint.setColor(Color.argb(70, 12, 8, 5));
             } else {
-                noisePaint.setColor(Color.argb(60, 160, 110, 70)); // highlight
+                // mid rock
+                blobPaint.setColor(Color.argb(45, 55, 42, 30));
             }
-            canvas.drawPoint(px, py, noisePaint);
+            canvas.drawCircle(cx, cy, r, blobPaint);
         }
 
-        // ── 3. Per-brick slight colour variation ─────────────────────────────
-        int brickW = SIZE / BRICK_COLS;
-        int brickH = SIZE / BRICK_ROWS;
-        Paint brickPaint = new Paint();
-        brickPaint.setStyle(Paint.Style.FILL);
-        for (int row = 0; row < BRICK_ROWS; row++) {
-            // Offset every other row for a staggered brick pattern
-            int colOffset = (row % 2 == 0) ? 0 : brickW / 2;
-            for (int col = -1; col <= BRICK_COLS; col++) {
-                int left  = col * brickW + colOffset + MORTAR_PX / 2;
-                int top   = row * brickH              + MORTAR_PX / 2;
-                int right = left + brickW             - MORTAR_PX;
-                int bot   = top  + brickH             - MORTAR_PX;
-
-                // Small random brightness variation per brick
-                int var = rng.nextInt(30) - 15;  // ±15
-                int r = Math.max(0, Math.min(255, 107 + var));
-                int g = Math.max(0, Math.min(255,  66 + var));
-                int b = Math.max(0, Math.min(255,  38 + var));
-                brickPaint.setColor(Color.argb(120, r, g, b)); // semi-transparent overlay
-                canvas.drawRect(new RectF(left, top, right, bot), brickPaint);
-
-                // Subtle inner-edge darkening (simulate depth in brick joints)
-                Paint edgePaint = new Paint();
-                edgePaint.setStyle(Paint.Style.STROKE);
-                edgePaint.setStrokeWidth(2f);
-                edgePaint.setColor(Color.argb(60, 30, 16, 6));
-                canvas.drawRect(new RectF(left, top, right, bot), edgePaint);
+        // ── 4. Fine grain pixel scatter ──────────────────────────────────────
+        Paint grainPaint = new Paint();
+        grainPaint.setStrokeWidth(1.5f);
+        grainPaint.setStrokeCap(Paint.Cap.ROUND);
+        int NUM_GRAINS = SIZE * SIZE / 6;
+        for (int i = 0; i < NUM_GRAINS; i++) {
+            float px = rng.nextFloat() * SIZE;
+            float py = rng.nextFloat() * SIZE;
+            int type = rng.nextInt(4);
+            if (type == 0) {
+                grainPaint.setColor(Color.argb(55, 8,  5,  3));   // very dark speck
+            } else if (type == 1) {
+                grainPaint.setColor(Color.argb(35, 75, 58, 40));  // medium stone
+            } else if (type == 2) {
+                grainPaint.setColor(Color.argb(25, 110, 88, 62)); // warm highlight
+            } else {
+                grainPaint.setColor(Color.argb(20, 50, 55, 60));  // cool mineral
             }
+            canvas.drawPoint(px, py, grainPaint);
         }
 
-        // ── 4. Mortar lines (horizontal + vertical grid) ─────────────────────
-        Paint mortarPaint = new Paint();
-        mortarPaint.setColor(Color.rgb(72, 65, 58));  // dark warm grey
-        mortarPaint.setStrokeWidth(MORTAR_PX);
-        mortarPaint.setStyle(Paint.Style.FILL);
+        // ── 5. Natural crack lines ───────────────────────────────────────────
+        // Draw thin, jagged crack paths across the surface
+        Paint crackPaint = new Paint();
+        crackPaint.setAntiAlias(true);
+        crackPaint.setStyle(Paint.Style.STROKE);
+        crackPaint.setStrokeCap(Paint.Cap.ROUND);
+        int NUM_CRACKS = 18;
+        for (int c = 0; c < NUM_CRACKS; c++) {
+            float sx = rng.nextFloat() * SIZE;
+            float sy = rng.nextFloat() * SIZE;
+            // crack width: thin (1–2 px) with dark shadow
+            crackPaint.setStrokeWidth(1f + rng.nextFloat() * 1.5f);
+            crackPaint.setColor(Color.argb(130 + rng.nextInt(80), 6, 4, 3));
 
-        // Horizontal lines
-        for (int row = 0; row <= BRICK_ROWS; row++) {
-            int y = row * brickH;
-            canvas.drawRect(0, y - MORTAR_PX / 2f, SIZE, y + MORTAR_PX / 2f, mortarPaint);
-        }
-        // Vertical lines (staggered per row)
-        for (int row = 0; row < BRICK_ROWS; row++) {
-            int colOffset = (row % 2 == 0) ? 0 : brickW / 2;
-            for (int col = -1; col <= BRICK_COLS + 1; col++) {
-                int x = col * brickW + colOffset;
-                int top  = row * brickH;
-                int bot  = top + brickH;
-                canvas.drawRect(x - MORTAR_PX / 2f, top, x + MORTAR_PX / 2f, bot, mortarPaint);
+            Path crackPath = new Path();
+            crackPath.moveTo(sx, sy);
+            float cx = sx, cy = sy;
+            int steps = 8 + rng.nextInt(10);
+            for (int s = 0; s < steps; s++) {
+                cx += (rng.nextFloat() - 0.5f) * 50f;
+                cy += (rng.nextFloat() - 0.5f) * 40f;
+                // Use quadratic bezier for organic look
+                float cpx = (cx + (rng.nextFloat() - 0.5f) * 20f);
+                float cpy = (cy + (rng.nextFloat() - 0.5f) * 20f);
+                crackPath.quadTo(cpx, cpy, cx, cy);
             }
+            canvas.drawPath(crackPath, crackPaint);
+
+            // Faint brighter edge alongside crack (mineral vein effect)
+            crackPaint.setStrokeWidth(0.5f);
+            crackPaint.setColor(Color.argb(30, 120, 100, 80));
+            canvas.drawPath(crackPath, crackPaint);
         }
 
-        // ── 5. Radial vignette — darkens corners to simulate cave depth ───────
-        Paint vignettePaint = new Paint();
+        // ── 6. Moisture / mineral streaks (vertical drip lines) ─────────────
+        Paint streakPaint = new Paint();
+        streakPaint.setAntiAlias(true);
+        streakPaint.setStyle(Paint.Style.STROKE);
+        streakPaint.setStrokeCap(Paint.Cap.ROUND);
+        int NUM_STREAKS = 12;
+        for (int s = 0; s < NUM_STREAKS; s++) {
+            float sx = rng.nextFloat() * SIZE;
+            float length = 30f + rng.nextFloat() * 120f;
+            streakPaint.setStrokeWidth(1f + rng.nextFloat() * 2f);
+
+            // Either a dark damp streak or a faint white mineral deposit
+            if (rng.nextBoolean()) {
+                streakPaint.setColor(Color.argb(40, 20, 30, 40)); // damp dark streak
+            } else {
+                streakPaint.setColor(Color.argb(25, 200, 195, 185)); // mineral white
+            }
+
+            Path streak = new Path();
+            streak.moveTo(sx, rng.nextFloat() * SIZE);
+            float cx2 = sx + (rng.nextFloat() - 0.5f) * 15f;
+            streak.lineTo(cx2, rng.nextFloat() * SIZE);
+            canvas.drawPath(streak, streakPaint);
+        }
+
+        // ── 7. Stalactite-drip dark base shadows (top area darkened splotches)
+        Paint dripPaint = new Paint();
+        dripPaint.setAntiAlias(true);
+        dripPaint.setStyle(Paint.Style.FILL);
+        int NUM_DRIPS = 12;
+        for (int d = 0; d < NUM_DRIPS; d++) {
+            float cx3 = rng.nextFloat() * SIZE;
+            // Drip shadow is near the top quarter of texture
+            float cy3 = rng.nextFloat() * (SIZE * 0.3f);
+            float w = 15f + rng.nextFloat() * 40f;
+            float h = 20f + rng.nextFloat() * 60f;
+            int alpha = 50 + rng.nextInt(60);
+            dripPaint.setColor(Color.argb(alpha, 5, 3, 2));
+            canvas.drawOval(new RectF(cx3 - w/2f, cy3, cx3 + w/2f, cy3 + h), dripPaint);
+        }
+
+        // ── 8. Radial vignette — pushes edges very dark like interior shadow ─
         RadialGradient vignette = new RadialGradient(
-            SIZE / 2f, SIZE / 2f,            // center
-            SIZE * 0.75f,                    // radius at which darkening starts
-            Color.TRANSPARENT,               // center: transparent
-            Color.argb(160, 20, 10, 4),      // edge: dark earthy shadow
+            SIZE / 2f, SIZE / 2f,
+            SIZE * 0.65f,
+            Color.TRANSPARENT,
+            Color.argb(180, 5, 3, 2),
             Shader.TileMode.CLAMP);
+        Paint vignettePaint = new Paint();
         vignettePaint.setShader(vignette);
         canvas.drawRect(0, 0, SIZE, SIZE, vignettePaint);
 
-        // ── Upload to OpenGL with GL_REPEAT for seamless tiling ───────────────
+        // ── Upload to OpenGL ─────────────────────────────────────────────────
         int[] handle = new int[1];
         GLES20.glGenTextures(1, handle, 0);
         if (handle[0] != 0) {

@@ -2947,12 +2947,18 @@ drawable btn_radio_off_mtrl
 drawable btn_radio_off_to_on_mtrl_animation
 drawable btn_radio_on_mtrl
 drawable btn_radio_on_to_off_mtrl_animation
-drawable cave_tunnel
+drawable cave_drippingings
+drawable cave_drippingings2
+drawable cave_entering
+drawable cave_entrance_withwoodenfloor
+drawable cave_entranceorexit
+drawable cave_outerlook
 drawable design_fab_background
 drawable design_ic_visibility
 drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
+drawable fromcave_outside_view
 drawable ic_arrow_back_black_24
 drawable ic_clear_black_24
 drawable ic_clock_black_24dp
@@ -3138,7 +3144,11 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
-id btnBegin
+id btnCloseInfo
+id btnEnterCave
+id btnInsight1
+id btnInsight2
+id btnInsight3
 id btnMove
 id btnStartGame
 id buttonPanel
@@ -3225,8 +3235,6 @@ id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
 id fade
-id feedbackLeft
-id feedbackRight
 id fill
 id fill_horizontal
 id fill_vertical
@@ -3242,6 +3250,7 @@ id floating
 id forever
 id fragment_container_view_tag
 id frost
+id frostOverlay
 id fullscreen_header
 id ghost_view
 id ghost_view_holder
@@ -3253,8 +3262,6 @@ id group_divider
 id grouping
 id groups
 id header_title
-id healthBarLeft
-id healthBarRight
 id hideable
 id home
 id homeAsUp
@@ -3270,6 +3277,9 @@ id immediateStop
 id included
 id indeterminate
 id info
+id infoCardBody
+id infoCardContainer
+id infoCardTitle
 id invisible
 id inward
 id italic
@@ -3322,6 +3332,7 @@ id month_navigation_next
 id month_navigation_previous
 id month_title
 id motion_base
+id movesCounter
 id mtrl_anchor_parent
 id mtrl_calendar_day_selector_frame
 id mtrl_calendar_days_of_week
@@ -3405,8 +3416,6 @@ id radio
 id ratio
 id rectangles
 id report_drawn
-id resultLeft
-id resultRight
 id reverseSawtooth
 id right
 id rightToLeft
@@ -3418,6 +3427,8 @@ id save_non_transition_alpha
 id save_overlay_view
 id sawtooth
 id scale
+id sceneLabel
+id sceneTransitionOverlay
 id screen
 id scroll
 id scrollIndicatorDown
@@ -3437,6 +3448,7 @@ id search_voice_btn
 id select_dialog_listview
 id selected
 id selection_type
+id selectorBg
 id sharedValueSet
 id sharedValueUnset
 id shortcut
@@ -3506,8 +3518,6 @@ id textinput_placeholder
 id textinput_prefix_text
 id textinput_suffix_text
 id time
-id timerLeft
-id timerRight
 id title
 id titleDividerNoCustom
 id title_template
