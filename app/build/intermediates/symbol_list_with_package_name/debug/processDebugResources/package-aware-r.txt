@@ -3146,9 +3146,6 @@ id bounceEnd
 id bounceStart
 id btnCloseInfo
 id btnEnterCave
-id btnInsight1
-id btnInsight2
-id btnInsight3
 id btnMove
 id btnStartGame
 id buttonPanel

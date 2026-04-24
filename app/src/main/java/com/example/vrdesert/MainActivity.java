@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity
     private VRRenderer    vrRenderer;
     private SensorHandler sensorHandler;
     private MoveServer    moveServer;
+    private AudioEngine   audioEngine;
 
     // ── UI ─────────────────────────────────────────────────────────────────
     private TextView movesCounter;
@@ -91,9 +92,8 @@ public class MainActivity extends AppCompatActivity
         glSurfaceView.setEGLContextClientVersion(2);
 
         sensorHandler = new SensorHandler(this);
-        // InteractionManager kept minimal — no collectibles
-        InteractionManager interactionManager = new InteractionManager(
-            (id, type) -> { /* no-op: no collectible items */ });
+        // InteractionManager to handle gaze collection of 3D objects
+        InteractionManager interactionManager = new InteractionManager(this);
 
         vrRenderer = new VRRenderer(this, sensorHandler, interactionManager);
         glSurfaceView.setRenderer(vrRenderer);
@@ -114,21 +114,12 @@ public class MainActivity extends AppCompatActivity
         Button btnMove = findViewById(R.id.btnMove);
         btnMove.setOnClickListener(v -> attemptMove());
 
-        // Insight buttons
-        Button btn1 = findViewById(R.id.btnInsight1);
-        Button btn2 = findViewById(R.id.btnInsight2);
-        Button btn3 = findViewById(R.id.btnInsight3);
-
-        btn1.setOnClickListener(v -> showInsight(0));
-        btn2.setOnClickListener(v -> showInsight(1));
-        btn3.setOnClickListener(v -> showInsight(2));
-
-        // Update insight button labels for current scene
-        updateInsightButtonLabels();
-
         // Info card close
         Button btnClose = findViewById(R.id.btnCloseInfo);
         btnClose.setOnClickListener(v -> hideInfoCard());
+
+        // Audio engine
+        audioEngine = new AudioEngine();
 
         // Remote controller server
         moveServer = new MoveServer(vrRenderer);
@@ -159,10 +150,14 @@ public class MainActivity extends AppCompatActivity
             vrRenderer.setScene(currentScene);
             vrRenderer.moveForward(); // keeps visual motion burst
 
+            // Update audio scene
+            if (audioEngine != null) {
+                audioEngine.setScene(currentScene);
+            }
+
             // Update UI
             updateMovesCounter();
             updateSceneLabel();
-            updateInsightButtonLabels();
 
             // Fade overlay back out
             ObjectAnimator fadeOut = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 1f, 0f);
@@ -192,7 +187,12 @@ public class MainActivity extends AppCompatActivity
         ObjectAnimator fadeOut = ObjectAnimator.ofFloat(infoCardContainer, "alpha", 1f, 0f);
         fadeOut.setDuration(200);
         fadeOut.start();
-        infoCardContainer.postDelayed(() -> infoCardContainer.setVisibility(View.GONE), 200);
+        infoCardContainer.postDelayed(() -> {
+            infoCardContainer.setVisibility(View.GONE);
+            if (vrRenderer != null) {
+                vrRenderer.resetInfoButtons();
+            }
+        }, 200);
     }
 
     // ── UI helpers ─────────────────────────────────────────────────────────
@@ -204,16 +204,7 @@ public class MainActivity extends AppCompatActivity
         sceneLabel.setText(SCENE_LABELS[currentScene]);
     }
 
-    private void updateInsightButtonLabels() {
-        // Update the button text to match the scene's insight topics
-        String[][] sceneInsights = INSIGHTS[currentScene];
-        Button btn1 = findViewById(R.id.btnInsight1);
-        Button btn2 = findViewById(R.id.btnInsight2);
-        Button btn3 = findViewById(R.id.btnInsight3);
-        if (btn1 != null) btn1.setText(sceneInsights[0][0].split(" ")[0] + " " + sceneInsights[0][0].split(" ")[1]);
-        if (btn2 != null) btn2.setText(sceneInsights[1][0].split(" ")[0] + " " + sceneInsights[1][0].split(" ")[1]);
-        if (btn3 != null) btn3.setText(sceneInsights[2][0].split(" ")[0] + " " + sceneInsights[2][0].split(" ")[1]);
-    }
+
 
     // ── Lifecycle: GL + Sensor ─────────────────────────────────────────────
     @Override
@@ -221,6 +212,11 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         glSurfaceView.onResume();
         sensorHandler.start();
+        if (audioEngine != null) {
+            audioEngine.startCaveAmbiance();
+        }
+        // Feed head yaw to audio engine periodically
+        startAudioYawUpdater();
     }
 
     @Override
@@ -228,6 +224,9 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         glSurfaceView.onPause();
         sensorHandler.stop();
+        if (audioEngine != null) {
+            audioEngine.stopAudio();
+        }
     }
 
     @Override
@@ -236,7 +235,31 @@ public class MainActivity extends AppCompatActivity
         if (moveServer != null) moveServer.stopServer();
     }
 
-    // ── Stub required by InteractionManager.InteractionListener ───────────
-    // (kept so the interface is implemented — no actual items to collect)
-    public void onObjectCollected(int objectId, GameObject.Type type) { }
+    @Override
+    public void onObjectCollected(int objectId, GameObject.Type type) {
+        if (audioEngine != null) {
+            audioEngine.playCollectionSound();
+        }
+        if (type == GameObject.Type.INFO_BUTTON_0) {
+            showInsight(0);
+        } else if (type == GameObject.Type.INFO_BUTTON_1) {
+            showInsight(1);
+        } else if (type == GameObject.Type.INFO_BUTTON_2) {
+            showInsight(2);
+        }
+    }
+
+    // ── Audio yaw updater ─────────────────────────────────────────────────
+    private android.os.Handler audioHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable audioYawRunnable;
+
+    private void startAudioYawUpdater() {
+        audioYawRunnable = () -> {
+            if (audioEngine != null && sensorHandler != null) {
+                audioEngine.setHeadYaw(sensorHandler.getYaw());
+            }
+            audioHandler.postDelayed(audioYawRunnable, 100); // 10Hz update
+        };
+        audioHandler.post(audioYawRunnable);
+    }
 }

@@ -98,50 +98,7 @@
             android:letterSpacing="0.1"
             android:layout_marginBottom="6dp" />
 
-        <!-- Insight buttons row -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginBottom="8dp">
 
-            <Button
-                android:id="@+id/btnInsight1"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="❄ Ice"
-                android:textColor="#C8E8FF"
-                android:textSize="12sp"
-                android:backgroundTint="#1A3A5A"
-                android:layout_marginEnd="8dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp" />
-
-            <Button
-                android:id="@+id/btnInsight2"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="💎 Crystal"
-                android:textColor="#C8E8FF"
-                android:textSize="12sp"
-                android:backgroundTint="#1A3A5A"
-                android:layout_marginEnd="8dp"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp" />
-
-            <Button
-                android:id="@+id/btnInsight3"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="🌬 Air"
-                android:textColor="#C8E8FF"
-                android:textSize="12sp"
-                android:backgroundTint="#1A3A5A"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp" />
-
-        </LinearLayout>
 
         <!-- MOVE button -->
         <Button

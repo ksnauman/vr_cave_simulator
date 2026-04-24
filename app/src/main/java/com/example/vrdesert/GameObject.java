@@ -1,7 +1,7 @@
 package com.example.vrdesert;
 
 public class GameObject {
-    public enum Type { EDIBLE_MUSHROOM, CAVE_PLANT, TOXIC_FUNGUS }
+    public enum Type { EDIBLE_MUSHROOM, CAVE_PLANT, TOXIC_FUNGUS, INFO_BUTTON_0, INFO_BUTTON_1, INFO_BUTTON_2 }
     
     public float x;
     public float y;

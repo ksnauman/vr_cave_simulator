@@ -11,9 +11,6 @@ drawable cave_outerlook
 drawable fromcave_outside_view
 id btnCloseInfo
 id btnEnterCave
-id btnInsight1
-id btnInsight2
-id btnInsight3
 id btnMove
 id btnStartGame
 id frostOverlay
