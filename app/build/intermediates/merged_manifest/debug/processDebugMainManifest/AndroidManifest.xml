@@ -46,6 +46,10 @@
             android:name="com.example.vrdesert.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape" />
+        <activity
+            android:name="com.example.vrdesert.CalibrationActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="landscape" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

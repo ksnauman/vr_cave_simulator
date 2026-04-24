@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000">
+
+    <android.opengl.GLSurfaceView
+        android:id="@+id/calibrationSurfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <!-- Left Eye Overlay -->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/textStatsLeft"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:textColor="#FFFFFF"
+                android:shadowColor="#000"
+                android:shadowRadius="3"
+                android:textSize="14sp"
+                android:fontFamily="monospace"
+                android:text="IPD: 0.065\nFOV: 90\nLens: 0.02\nMode: GRID" />
+
+            <LinearLayout
+                android:id="@+id/controlsLeft"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical"
+                android:background="#44000000"
+                android:padding="10dp"
+                android:visibility="visible">
+                
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="IPD" android:textColor="#FFF"/>
+                <SeekBar android:id="@+id/seekBarIpdLeft" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100"/>
+                
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FOV" android:textColor="#FFF"/>
+                <SeekBar android:id="@+id/seekBarFovLeft" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="50"/>
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lens Offset" android:textColor="#FFF"/>
+                <SeekBar android:id="@+id/seekBarLensLeft" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="50"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <!-- Right Eye Overlay -->
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/textStatsRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:textColor="#FFFFFF"
+                android:shadowColor="#000"
+                android:shadowRadius="3"
+                android:textSize="14sp"
+                android:fontFamily="monospace"
+                android:text="IPD: 0.065\nFOV: 90\nLens: 0.02\nMode: GRID" />
+            
+            <LinearLayout
+                android:id="@+id/controlsRight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical"
+                android:background="#44000000"
+                android:padding="10dp"
+                android:visibility="visible">
+                
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="IPD" android:textColor="#FFF"/>
+                <SeekBar android:id="@+id/seekBarIpdRight" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="100"/>
+                
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="FOV" android:textColor="#FFF"/>
+                <SeekBar android:id="@+id/seekBarFovRight" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="50"/>
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lens Offset" android:textColor="#FFF"/>
+                <SeekBar android:id="@+id/seekBarLensRight" android:layout_width="match_parent" android:layout_height="wrap_content" android:max="50"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

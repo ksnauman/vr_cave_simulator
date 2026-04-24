@@ -3143,12 +3143,14 @@ int id bounce 0x7f08005e
 int id bounceBoth 0x7f08005f
 int id bounceEnd 0x7f080060
 int id bounceStart 0x7f080061
+int id btnCalibration 0x7f0801fb
 int id btnCloseInfo 0x7f080062
 int id btnEnterCave 0x7f080063
 int id btnMove 0x7f080064
 int id btnStartGame 0x7f080065
 int id buttonPanel 0x7f080066
 int id cache_measures 0x7f080067
+int id calibrationSurfaceView 0x7f0801fc
 int id callMeasure 0x7f080068
 int id cancel_button 0x7f080069
 int id carryVelocity 0x7f08006a
@@ -3178,6 +3180,8 @@ int id content 0x7f080081
 int id contentPanel 0x7f080082
 int id contiguous 0x7f080083
 int id continuousVelocity 0x7f080084
+int id controlsLeft 0x7f0801fd
+int id controlsRight 0x7f0801fe
 int id coordinator 0x7f080085
 int id cos 0x7f080086
 int id counterclockwise 0x7f080087
@@ -3441,6 +3445,12 @@ int id search_mag_icon 0x7f080188
 int id search_plate 0x7f080189
 int id search_src_text 0x7f08018a
 int id search_voice_btn 0x7f08018b
+int id seekBarFovLeft 0x7f0801ff
+int id seekBarFovRight 0x7f080200
+int id seekBarIpdLeft 0x7f080201
+int id seekBarIpdRight 0x7f080202
+int id seekBarLensLeft 0x7f080203
+int id seekBarLensRight 0x7f080204
 int id select_dialog_listview 0x7f08018c
 int id selected 0x7f08018d
 int id selection_type 0x7f08018e
@@ -3503,6 +3513,8 @@ int id textEnd 0x7f0801c6
 int id textSpacerNoButtons 0x7f0801c7
 int id textSpacerNoTitle 0x7f0801c8
 int id textStart 0x7f0801c9
+int id textStatsLeft 0x7f080205
+int id textStatsRight 0x7f080206
 int id textTop 0x7f0801ca
 int id text_input_end_icon 0x7f0801cb
 int id text_input_error_icon 0x7f0801cc
@@ -3666,6 +3678,7 @@ int layout abc_search_dropdown_item_icons_2line 0x7f0b0018
 int layout abc_search_view 0x7f0b0019
 int layout abc_select_dialog_material 0x7f0b001a
 int layout abc_tooltip 0x7f0b001b
+int layout activity_calibration 0x7f0b006c
 int layout activity_main 0x7f0b001c
 int layout activity_start 0x7f0b001d
 int layout activity_story 0x7f0b001e

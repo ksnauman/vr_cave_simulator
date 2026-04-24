@@ -10,7 +10,7 @@ import android.opengl.GLSurfaceView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity
-        implements InteractionManager.InteractionListener {
+        implements InteractionManager.InteractionListener, RemoteControlListener {
 
     // ── GL / VR ────────────────────────────────────────────────────────────
     private GLSurfaceView glSurfaceView;
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         audioEngine = new AudioEngine();
 
         // Remote controller server
-        moveServer = new MoveServer(vrRenderer);
+        moveServer = new MoveServer(this);
         moveServer.start();
     }
 
@@ -246,6 +246,13 @@ public class MainActivity extends AppCompatActivity
             showInsight(1);
         } else if (type == GameObject.Type.INFO_BUTTON_2) {
             showInsight(2);
+        }
+    }
+
+    @Override
+    public void onRemoteClick() {
+        if (vrRenderer != null) {
+            vrRenderer.moveForward();
         }
     }
 

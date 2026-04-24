@@ -33,5 +33,10 @@ public class StartActivity extends AppCompatActivity {
                 overridePendingTransition(0, 0); // no default animation — frost handles it
             }, 550);
         });
+
+        findViewById(R.id.btnCalibration).setOnClickListener(v -> {
+            Intent intent = new Intent(StartActivity.this, CalibrationActivity.class);
+            startActivity(intent);
+        });
     }
 }

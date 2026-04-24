@@ -9,10 +9,14 @@ import java.net.Socket;
 public class MoveServer extends Thread {
     private ServerSocket serverSocket;
     private boolean running = true;
-    private final VRRenderer vrRenderer;
+    private RemoteControlListener listener;
 
-    public MoveServer(VRRenderer vrRenderer) {
-        this.vrRenderer = vrRenderer;
+    public MoveServer(RemoteControlListener listener) {
+        this.listener = listener;
+    }
+
+    public void setListener(RemoteControlListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -44,8 +48,8 @@ public class MoveServer extends Thread {
                         out.write(response.getBytes());
                     } 
                     else if (requestLine.contains("GET /move/click")) {
-                        if (vrRenderer != null) {
-                            vrRenderer.moveForward();
+                        if (listener != null) {
+                            listener.onRemoteClick();
                         }
                         
                         String response = "HTTP/1.1 200 OK\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
