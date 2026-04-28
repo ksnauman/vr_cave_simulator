@@ -8,6 +8,8 @@ public class InteractionManager {
 
     public interface InteractionListener {
         void onObjectCollected(int objectId, GameObject.Type type);
+        void onHoverEnter(int objectId);
+        void onHoverExit();
     }
 
     private final InteractionListener listener;
@@ -38,13 +40,7 @@ public class InteractionManager {
                           float forwardX, float forwardY, float forwardZ,
                           GameObject obj, int objectId) {
         
-        // Ignore already collected objects
-        if (obj.isCollected) {
-            return;
-        }
-
         // Vector from camera to object
-        // NOTE: we approximate object center by adding 0.5f to Y here, matching the renderer drawing logic
         float dirX = obj.x - camX;
         float dirY = (obj.y + 0.5f) - camY;
         float dirZ = obj.z - camZ;
@@ -63,31 +59,21 @@ public class InteractionManager {
         float dot = (forwardX * dirX) + (forwardY * dirY) + (forwardZ * dirZ);
 
         // If the dot product is close to 1, the object is in the center of the gaze
-        // 0.90 is roughly a 25-degree cone, making it much more forgiving
         if (dot > 0.90f && dist < 50f) { 
             if (currentGazedObjectId != objectId) {
                 // New object gazed
                 currentGazedObjectId = objectId;
-                gazeStartTime = System.currentTimeMillis();
                 Log.d(TAG, "Gaze target acquired on Object " + objectId);
-            } else {
-                // Still gazing at the same object
-                long elapsed = System.currentTimeMillis() - gazeStartTime;
                 
-                if (elapsed >= GAZE_COLLECT_MS) {
-                    // Item Collected
-                    obj.isCollected = true;
-                    currentGazedObjectId = -1;
-                    Log.d(TAG, "Item Collected: Object " + objectId);
-                    
-                    mainHandler.post(() -> listener.onObjectCollected(objectId, obj.type));
-                }
+                mainHandler.post(() -> listener.onHoverEnter(objectId));
             }
         } else {
             if (currentGazedObjectId == objectId) {
-                // Looked away before collecting
+                // Looked away
                 currentGazedObjectId = -1;
-                Log.d(TAG, "Gaze lost on Object " + objectId + " - Timer Reset");
+                Log.d(TAG, "Gaze lost on Object " + objectId);
+                
+                mainHandler.post(() -> listener.onHoverExit());
             }
         }
     }

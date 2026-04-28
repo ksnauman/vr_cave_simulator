@@ -9,6 +9,7 @@ import com.example.vrdesert.shapes.TextureHelper;
 import com.example.vrdesert.shapes.Crosshair;
 import com.example.vrdesert.shapes.ParticleSystem;
 import com.example.vrdesert.shapes.BreathFog;
+import com.example.vrdesert.shapes.Vignette;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -43,6 +44,7 @@ public class VRRenderer implements GLSurfaceView.Renderer {
     private GameObject[]   infoButtons;
     private ParticleSystem particleSystem;
     private BreathFog      breathFog;
+    private Vignette       vignette;
 
     // One texture per scene (loaded once in onSurfaceCreated)
     private int[] sceneTextureIds = new int[4];
@@ -60,7 +62,11 @@ public class VRRenderer implements GLSurfaceView.Renderer {
 
     // ── Camera ─────────────────────────────────────────────────────────────
     private static final float CAM_Y      = 1.0f;
-    private static final float EYE_OFFSET = 0.05f; // IPD
+    private static final float EYE_OFFSET = 0.080f; // Further increased for wider split (IPD)
+
+    // ── Viewport scaling ──────────────────────────────────────────────────
+    private static final float VIEWPORT_MARGIN_X = 0.12f; // Increased margin for wider physical gap between views
+    private static final float VIEWPORT_MARGIN_Y = 0.06f; // Reduced margin (larger view)
 
     // ── Visual motion (MOVE burst) ─────────────────────────────────────────
     private float visualVelocity      = 0f;
@@ -192,9 +198,9 @@ public class VRRenderer implements GLSurfaceView.Renderer {
     }
 
     private void positionInfoButtons() {
-        float r = 15f;
-        float pitch = (float) Math.toRadians(-15);
-        float[] yaws = { -30f, 0f, 30f };
+        float r = 18f; // slightly further away
+        float pitch = (float) Math.toRadians(-20); // slightly lower
+        float[] yaws = { -55f, 45f, 105f }; // moved aside from center (0)
         for (int i = 0; i < 3; i++) {
             float yaw = (float) Math.toRadians(yaws[i]);
             infoButtons[i].x = (float) (-Math.sin(yaw) * Math.cos(pitch)) * r;
@@ -249,6 +255,7 @@ public class VRRenderer implements GLSurfaceView.Renderer {
         breathFog = new BreathFog();
         breathFog.initGL();
 
+        vignette = new Vignette();
         crosshair = new Crosshair();
     }
 
@@ -256,12 +263,17 @@ public class VRRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         this.width  = width;
         this.height = height;
+        
+        // Calculate the "smaller" view dimensions
+        float viewW = (width / 2f) * (1.0f - 2.0f * VIEWPORT_MARGIN_X);
+        float viewH = height * (1.0f - 2.0f * VIEWPORT_MARGIN_Y);
+        float ratio = viewW / viewH;
+
         GLES20.glViewport(0, 0, width, height);
 
-        float ratio = (float)(width / 2) / height;
         Matrix.perspectiveM(leftProjectionMatrix,  0, 75f, ratio, 0.1f, 200f);
         Matrix.perspectiveM(rightProjectionMatrix, 0, 75f, ratio, 0.1f, 200f);
-        Matrix.orthoM(uiProjectionMatrix, 0, 0, width / 2f, height, 0, -1, 1);
+        Matrix.orthoM(uiProjectionMatrix, 0, 0, viewW, viewH, 0, -1, 1);
     }
 
     @Override
@@ -301,7 +313,9 @@ public class VRRenderer implements GLSurfaceView.Renderer {
 
         // ── Recalculate projection if FOV is bursting ─────────────────────
         if (transitionFOVBurst > 0.1f) {
-            float ratio = (float)(width / 2) / height;
+            float viewW = (width / 2f) * (1.0f - 2.0f * VIEWPORT_MARGIN_X);
+            float viewH = height * (1.0f - 2.0f * VIEWPORT_MARGIN_Y);
+            float ratio = viewW / viewH;
             float fov = 75f + transitionFOVBurst;
             Matrix.perspectiveM(leftProjectionMatrix,  0, fov, ratio, 0.1f, 200f);
             Matrix.perspectiveM(rightProjectionMatrix, 0, fov, ratio, 0.1f, 200f);
@@ -333,8 +347,14 @@ public class VRRenderer implements GLSurfaceView.Renderer {
             crosshair.setTargeting(interactionManager.isTargeting());
         }
 
+        // ── Dimensions for smaller views ─────────────────────────────────
+        int viewW = (int)((width / 2f) * (1.0f - 2.0f * VIEWPORT_MARGIN_X));
+        int viewH = (int)(height * (1.0f - 2.0f * VIEWPORT_MARGIN_Y));
+        int padX  = (int)((width / 2f) * VIEWPORT_MARGIN_X);
+        int padY  = (int)(height * VIEWPORT_MARGIN_Y);
+
         // ── Left eye ─────────────────────────────────────────────────────
-        GLES20.glViewport(0, 0, width / 2, height);
+        GLES20.glViewport(padX, padY, viewW, viewH);
         float lox = (float) Math.cos(yawRad) * EYE_OFFSET;
         float loz = (float)-Math.sin(yawRad) * EYE_OFFSET;
         Matrix.setLookAtM(viewMatrix, 0,
@@ -344,11 +364,12 @@ public class VRRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(vPMatrix, 0, leftProjectionMatrix, 0, viewMatrix, 0);
         drawScene(vPMatrix);
         drawParticles(vPMatrix);
-        drawUI();
+        drawUI(viewW, viewH);
         drawBreathFog();
+        vignette.draw(0.12f, 0.05f);
 
         // ── Right eye ────────────────────────────────────────────────────
-        GLES20.glViewport(width / 2, 0, width / 2, height);
+        GLES20.glViewport(width / 2 + padX, padY, viewW, viewH);
         float rox = (float)-Math.cos(yawRad) * EYE_OFFSET;
         float roz = (float) Math.sin(yawRad) * EYE_OFFSET;
         Matrix.setLookAtM(viewMatrix, 0,
@@ -358,8 +379,9 @@ public class VRRenderer implements GLSurfaceView.Renderer {
         Matrix.multiplyMM(vPMatrix, 0, rightProjectionMatrix, 0, viewMatrix, 0);
         drawScene(vPMatrix);
         drawParticles(vPMatrix);
-        drawUI();
+        drawUI(viewW, viewH);
         drawBreathFog();
+        vignette.draw(0.12f, 0.05f);
     }
 
     // ── Draw helpers ───────────────────────────────────────────────────────
@@ -430,12 +452,11 @@ public class VRRenderer implements GLSurfaceView.Renderer {
         breathFog.draw(elapsedSec, intensity);
     }
 
-    private void drawUI() {
-        if (crosshair == null) return;
+    private void drawUI(int viewW, int viewH) {
+        if (crosshair == null || !interactionManager.isTargeting()) return;
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         Matrix.setIdentityM(uiModelMatrix, 0);
-        float eyeW = width / 2f;
-        Matrix.translateM(uiModelMatrix, 0, eyeW / 2f, height / 2f, 0f);
+        Matrix.translateM(uiModelMatrix, 0, viewW / 2f, viewH / 2f, 0f);
         Matrix.multiplyMM(uiMVPMatrix, 0, uiProjectionMatrix, 0, uiModelMatrix, 0);
         crosshair.draw(uiMVPMatrix);
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);

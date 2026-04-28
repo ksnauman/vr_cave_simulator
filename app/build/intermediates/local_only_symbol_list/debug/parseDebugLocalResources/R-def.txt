@@ -10,7 +10,6 @@ drawable cave_entranceorexit
 drawable cave_outerlook
 drawable fromcave_outside_view
 id btnCalibration
-id btnCloseInfo
 id btnEnterCave
 id btnMove
 id btnStartGame

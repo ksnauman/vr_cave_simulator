@@ -3145,7 +3145,6 @@ id bounceBoth
 id bounceEnd
 id bounceStart
 id btnCalibration
-id btnCloseInfo
 id btnEnterCave
 id btnMove
 id btnStartGame

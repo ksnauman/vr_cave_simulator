@@ -8,6 +8,7 @@ import com.example.vrdesert.shapes.Cube;
 import com.example.vrdesert.shapes.Grid;
 import com.example.vrdesert.shapes.Crosshair;
 import com.example.vrdesert.shapes.Frame;
+import com.example.vrdesert.shapes.Vignette;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -24,15 +25,20 @@ public class CalibrationRenderer implements GLSurfaceView.Renderer {
     private final SensorHandler sensorHandler;
 
     // Parameters
-    private float ipd = 0.065f;
-    private float fov = 90.0f;
-    private float lensCenterOffset = 0.02f;
+    private float ipd = 0.085f; // Increased default
+    private float fov = 85.0f;  // Slightly reduced for "smaller" look
+    private float lensCenterOffset = 0.04f; // Increased default
+
+    // Viewport scaling (consistent with VRRenderer)
+    private static final float VIEWPORT_MARGIN_X = 0.12f;
+    private static final float VIEWPORT_MARGIN_Y = 0.06f;
 
     // GL Objects
     private Grid grid;
     private Crosshair crosshair;
     private Cube cube;
     private Frame frame;
+    private Vignette vignette;
 
     // Matrices
     private final float[] leftProjectionMatrix = new float[16];
@@ -79,6 +85,7 @@ public class CalibrationRenderer implements GLSurfaceView.Renderer {
         crosshair = new Crosshair();
         cube = new Cube();
         frame = new Frame();
+        vignette = new Vignette();
     }
 
     @Override
@@ -90,7 +97,9 @@ public class CalibrationRenderer implements GLSurfaceView.Renderer {
 
     private void updateProjections() {
         if (width <= 0 || height <= 0) return;
-        float ratio = (float) (width / 2) / height;
+        float viewW = (width / 2f) * (1.0f - 2.0f * VIEWPORT_MARGIN_X);
+        float viewH = height * (1.0f - 2.0f * VIEWPORT_MARGIN_Y);
+        float ratio = viewW / viewH;
         Matrix.perspectiveM(leftProjectionMatrix, 0, fov, ratio, 0.1f, 100f);
         Matrix.perspectiveM(rightProjectionMatrix, 0, fov, ratio, 0.1f, 100f);
     }
@@ -106,12 +115,18 @@ public class CalibrationRenderer implements GLSurfaceView.Renderer {
         float fY = (float) (Math.sin(-pitchRad));
         float fZ = (float) (-Math.cos(yawRad) * Math.cos(pitchRad));
 
+        // Calculate dimensions
+        int viewW = (int)((width / 2f) * (1.0f - 2.0f * VIEWPORT_MARGIN_X));
+        int viewH = (int)(height * (1.0f - 2.0f * VIEWPORT_MARGIN_Y));
+        int padX  = (int)((width / 2f) * VIEWPORT_MARGIN_X);
+        int padY  = (int)(height * VIEWPORT_MARGIN_Y);
+
         // Left Eye
-        GLES20.glViewport(0, 0, width / 2, height);
+        GLES20.glViewport(padX, padY, viewW, viewH);
         renderEye(leftProjectionMatrix, yawRad, pitchRad, fX, fY, fZ, true);
 
         // Right Eye
-        GLES20.glViewport(width / 2, 0, width / 2, height);
+        GLES20.glViewport(width / 2 + padX, padY, viewW, viewH);
         renderEye(rightProjectionMatrix, yawRad, pitchRad, fX, fY, fZ, false);
 
         // Draw Divider
@@ -156,6 +171,7 @@ public class CalibrationRenderer implements GLSurfaceView.Renderer {
         }
 
         drawMaskingFrame();
+        vignette.draw(0.12f, 0.05f);
     }
 
     private void drawGrid(float[] mvp) {

@@ -19,9 +19,9 @@ public class CalibrationActivity extends AppCompatActivity implements RemoteCont
     private int selectedParamIndex = 0; // 0: IPD, 1: FOV, 2: Lens Offset
     private String[] paramNames = {"IPD", "FOV", "Lens Offset"};
 
-    private float ipd = 0.065f;
-    private float fov = 90.0f;
-    private float lensOffset = 0.02f;
+    private float ipd = 0.085f;
+    private float fov = 85.0f;
+    private float lensOffset = 0.04f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class CalibrationActivity extends AppCompatActivity implements RemoteCont
     private void setupSeekBars() {
         // Left side
         SeekBar sbIpdL = findViewById(R.id.seekBarIpdLeft);
-        sbIpdL.setProgress((int)((ipd - 0.02f) / (0.12f - 0.02f) * 100));
+        sbIpdL.setProgress((int)((ipd - 0.02f) / (0.16f - 0.02f) * 100));
         sbIpdL.setOnSeekBarChangeListener(createSeekBarListener(0));
 
         SeekBar sbFovL = findViewById(R.id.seekBarFovLeft);
@@ -61,7 +61,7 @@ public class CalibrationActivity extends AppCompatActivity implements RemoteCont
         sbFovL.setOnSeekBarChangeListener(createSeekBarListener(1));
 
         SeekBar sbLensL = findViewById(R.id.seekBarLensLeft);
-        sbLensL.setProgress((int)(lensOffset / 0.05f * 100));
+        sbLensL.setProgress((int)(lensOffset / 0.10f * 100));
         sbLensL.setOnSeekBarChangeListener(createSeekBarListener(2));
 
         // Right side (mirrored)
@@ -86,13 +86,13 @@ public class CalibrationActivity extends AppCompatActivity implements RemoteCont
                     selectedParamIndex = paramIndex; // Sync selection
                     float val = progress / 100f;
                     if (paramIndex == 0) { // IPD
-                        ipd = 0.02f + val * (0.12f - 0.02f);
+                        ipd = 0.02f + val * (0.16f - 0.02f);
                         renderer.setIpd(ipd);
                     } else if (paramIndex == 1) { // FOV
                         fov = 70f + val * (120f - 70f);
                         renderer.setFov(fov);
                     } else { // Lens
-                        lensOffset = val * 0.05f;
+                        lensOffset = val * 0.10f;
                         renderer.setLensCenterOffset(lensOffset);
                     }
                     updateStats();
@@ -151,7 +151,7 @@ public class CalibrationActivity extends AppCompatActivity implements RemoteCont
     private void adjustParameter(float smallStep, float largeStep) {
         switch (selectedParamIndex) {
             case 0: // IPD
-                ipd = Math.max(0.02f, Math.min(0.12f, ipd + smallStep));
+                ipd = Math.max(0.02f, Math.min(0.16f, ipd + smallStep));
                 renderer.setIpd(ipd);
                 break;
             case 1: // FOV
@@ -159,7 +159,7 @@ public class CalibrationActivity extends AppCompatActivity implements RemoteCont
                 renderer.setFov(fov);
                 break;
             case 2: // Lens Offset
-                lensOffset = Math.max(0f, Math.min(0.05f, lensOffset + smallStep));
+                lensOffset = Math.max(0f, Math.min(0.10f, lensOffset + smallStep));
                 renderer.setLensCenterOffset(lensOffset);
                 break;
         }

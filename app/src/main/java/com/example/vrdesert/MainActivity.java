@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity
     private TextView infoCardBody;
 
     // ── Move state ─────────────────────────────────────────────────────────
-    private int movesLeft = 3;
+    private int movesLeft = 3; 
     private int currentScene = 0;   // 0..3
     private boolean transitioning  = false;
 
@@ -110,13 +110,9 @@ public class MainActivity extends AppCompatActivity
         updateMovesCounter();
         updateSceneLabel();
 
-        // MOVE button
+        // MOVE button (manual)
         Button btnMove = findViewById(R.id.btnMove);
         btnMove.setOnClickListener(v -> attemptMove());
-
-        // Info card close
-        Button btnClose = findViewById(R.id.btnCloseInfo);
-        btnClose.setOnClickListener(v -> hideInfoCard());
 
         // Audio engine
         audioEngine = new AudioEngine();
@@ -128,10 +124,11 @@ public class MainActivity extends AppCompatActivity
 
     // ── Move Logic ─────────────────────────────────────────────────────────
     public void attemptMove() {
+        android.util.Log.d("MainActivity", "attemptMove() called. movesLeft=" + movesLeft + ", transitioning=" + transitioning);
         if (transitioning) return;
 
         if (movesLeft <= 0) {
-            Toast.makeText(this, "You've reached the heart of the cave", Toast.LENGTH_SHORT).show();
+            showFinalFact();
             return;
         }
 
@@ -204,6 +201,15 @@ public class MainActivity extends AppCompatActivity
         sceneLabel.setText(SCENE_LABELS[currentScene]);
     }
 
+    private void showFinalFact() {
+        infoCardTitle.setText("❄  The Eternal Cycle");
+        infoCardBody.setText("You have reached the deepest point of the cave. These glaciers act as Earth's memory, storing air and water from thousands of years ago. As the ice moves and melts, it returns that ancient history to the oceans, continuing a cycle that has shaped our planet for eons.\n\nThank you for exploring the Frozen Gateway.");
+        
+        infoCardContainer.setAlpha(0f);
+        infoCardContainer.setVisibility(View.VISIBLE);
+        ObjectAnimator.ofFloat(infoCardContainer, "alpha", 0f, 1f).setDuration(500).start();
+    }
+
 
 
     // ── Lifecycle: GL + Sensor ─────────────────────────────────────────────
@@ -237,23 +243,27 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onObjectCollected(int objectId, GameObject.Type type) {
-        if (audioEngine != null) {
-            audioEngine.playCollectionSound();
-        }
-        if (type == GameObject.Type.INFO_BUTTON_0) {
-            showInsight(0);
-        } else if (type == GameObject.Type.INFO_BUTTON_1) {
-            showInsight(1);
-        } else if (type == GameObject.Type.INFO_BUTTON_2) {
-            showInsight(2);
-        }
+        // No longer using collection timer for info buttons
+    }
+
+    @Override
+    public void onHoverEnter(int objectId) {
+        // Sound removed as per user request
+        showInsight(objectId);
+    }
+
+    @Override
+    public void onHoverExit() {
+        hideInfoCard();
     }
 
     @Override
     public void onRemoteClick() {
-        if (vrRenderer != null) {
-            vrRenderer.moveForward();
-        }
+        // Dedicated only to moving/scene shifting. 
+        // MUST run on UI thread because attemptMove touches UI/Views.
+        runOnUiThread(() -> {
+            attemptMove();
+        });
     }
 
     // ── Audio yaw updater ─────────────────────────────────────────────────

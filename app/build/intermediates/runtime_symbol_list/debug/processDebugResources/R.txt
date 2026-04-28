@@ -3144,7 +3144,6 @@ int id bounceBoth 0x7f08005f
 int id bounceEnd 0x7f080060
 int id bounceStart 0x7f080061
 int id btnCalibration 0x7f0801fb
-int id btnCloseInfo 0x7f080062
 int id btnEnterCave 0x7f080063
 int id btnMove 0x7f080064
 int id btnStartGame 0x7f080065
