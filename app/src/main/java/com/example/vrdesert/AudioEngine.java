@@ -119,22 +119,28 @@ public class AudioEngine {
                 float yaw = headYaw;
 
                 // Scene-dependent parameters
-                float windVolume, dripProb, dripVolume, rumbleAmount;
+                float windVolume, dripProb, dripVolume, rumbleAmount, shimmerAmount;
                 switch (scene) {
-                    case 0:  // Gateway — light wind, sparse drips
-                        windVolume = 3000f; dripProb = 0.9996f; dripVolume = 3000f; rumbleAmount = 0f;
+                    case 0: // Ajanta - Temple feel, low hum
+                    case 1: // Ellora
+                    case 2: // Badami
+                        windVolume = 2500f; dripProb = 0.9998f; dripVolume = 2000f; rumbleAmount = 0.2f; shimmerAmount = 0.05f;
                         break;
-                    case 1:  // Icicle Curtains — more drips, medium wind
-                        windVolume = 4000f; dripProb = 0.9992f; dripVolume = 4500f; rumbleAmount = 0.1f;
+                    case 3: // Waitomo - Magical bioluminescent drip
+                        windVolume = 1500f; dripProb = 0.9985f; dripVolume = 4500f; rumbleAmount = 0.05f; shimmerAmount = 0.4f;
                         break;
-                    case 2:  // Crystal Cathedral — deep rumble, echo, sparse drips
-                        windVolume = 2000f; dripProb = 0.9994f; dripVolume = 5000f; rumbleAmount = 0.4f;
+                    case 4: // Lascaux - Deep prehistoric silence
+                        windVolume = 1000f; dripProb = 0.9999f; dripVolume = 1500f; rumbleAmount = 0.1f; shimmerAmount = 0f;
                         break;
-                    case 3:  // Blue Window — outside wind, meltwater
-                        windVolume = 5500f; dripProb = 0.9990f; dripVolume = 3500f; rumbleAmount = 0.05f;
+                    case 5: // Vatnajokull - Ice cracking, high wind
+                        windVolume = 6000f; dripProb = 0.9995f; dripVolume = 3000f; rumbleAmount = 0.1f; shimmerAmount = 0.1f;
+                        // Occasional sharp ice crack handled by shimmer in higher freq
+                        break;
+                    case 6: // Son Doong - Jungle cavern, river rumble
+                        windVolume = 4000f; dripProb = 0.9988f; dripVolume = 3500f; rumbleAmount = 0.5f; shimmerAmount = 0.2f;
                         break;
                     default:
-                        windVolume = 3000f; dripProb = 0.9996f; dripVolume = 3000f; rumbleAmount = 0f;
+                        windVolume = 3000f; dripProb = 0.9996f; dripVolume = 3000f; rumbleAmount = 0.1f; shimmerAmount = 0f;
                 }
 
                 for (int i = 0; i < bufferSize; i++) {
@@ -145,6 +151,12 @@ public class AudioEngine {
                     float brownR = (lastBrownR + (0.04f * whiteR)) / 1.04f;
                     lastBrownL = brownL;
                     lastBrownR = brownR;
+
+                    // ── Shimmer / Crackle (High freq components) ─────────
+                    float shimmer = 0f;
+                    if (shimmerAmount > 0f && rand.nextFloat() > (1.0f - shimmerAmount * 0.01f)) {
+                        shimmer = (rand.nextFloat() * 2f - 1f) * 4000f;
+                    }
 
                     // Slow modulation (cavern echo feel)
                     float modulation = (float) Math.sin(
@@ -195,10 +207,12 @@ public class AudioEngine {
                     // Combine
                     float sampleL = (brownL * windVolume * modulation * panL)
                                   + (drip * dripVolume * dripL)
-                                  + (rumble * 2000f * panL);
+                                  + (rumble * 2000f * panL)
+                                  + (shimmer * panL);
                     float sampleR = (brownR * windVolume * modulation * panR)
                                   + (drip * dripVolume * dripR)
-                                  + (rumble * 2000f * panR);
+                                  + (rumble * 2000f * panR)
+                                  + (shimmer * panR);
 
                     // Interleaved stereo
                     int idx = i * 2;

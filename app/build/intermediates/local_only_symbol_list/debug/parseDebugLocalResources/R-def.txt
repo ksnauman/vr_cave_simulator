@@ -2,6 +2,7 @@ R_DEF: Internal format may change without notice
 local
 color black
 color white
+drawable bg_landing
 drawable cave_ajanta
 drawable cave_badami
 drawable cave_drippingings
@@ -44,6 +45,8 @@ drawable interior_lascaux
 drawable interior_sondoong
 drawable interior_vatnajokull
 drawable interior_waitomo
+drawable particle_dot
+drawable ui_info_icon
 id btnCalibration
 id btnCloseInfo
 id btnEnterCave

@@ -32,7 +32,8 @@ public class Sphere {
 
             for (int s = 0; s <= sectors; s++) {
                 float u = (float) s / sectors;
-                float theta = u * (float) Math.PI * 2f;
+                // Add PI/2 (90 deg) so that u=0.5 (image center) aligns with z=-1 (forward)
+                float theta = u * (float) Math.PI * 2f + (float) Math.PI * 0.5f;
 
                 float x = (float) (Math.sin(phi) * Math.cos(theta));
                 float y = (float) Math.cos(phi);
@@ -42,9 +43,8 @@ public class Sphere {
                 vertices[vIndex++] = y * radius;
                 vertices[vIndex++] = z * radius;
 
-                // 1.0f - u flips horizontally so the panorama reads correctly from inside
-                // 1.0f = one full photo wraps the entire sphere (no tiling)
-                texCoords[tIndex++] = (1.0f - u) * 1.0f;
+                // Use u directly (no 1.0 - u) to fix mirroring with the current theta direction
+                texCoords[tIndex++] = u;
                 texCoords[tIndex++] = v;
             }
         }

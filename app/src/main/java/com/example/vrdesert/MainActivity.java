@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity
             { {0.0f, 1.5f, -3.0f}, {-2.0f, 1.5f, -2.5f}, {2.0f, 1.5f, -2.5f} }, // Ajanta
             { {0.0f, 1.5f, -3.0f}, {-2.5f, 1.5f, -2.5f}, {2.5f, 1.5f, -2.5f} }, // Ellora
             { {0.0f, 1.5f, -3.0f}, {-2.0f, 1.5f, -2.0f}, {2.0f, 1.5f, -2.0f} }, // Badami
-            { {0.0f, 2.0f, -3.0f}, {0.0f, 1.0f, -2.0f},  {0.0f, 1.5f, -4.0f} }, // Waitomo
+            { {0.0f, 8.0f, -1.0f}, {0.0f, -6.0f, -3.0f},  {0.0f, 1.0f, -12.0f} }, // Waitomo (Up, Down, Deep)
             { {0.0f, 1.5f, -3.0f}, {-2.0f, 1.5f, -2.5f}, {2.0f, 1.5f, -2.5f} }, // Lascaux
             { {0.0f, 2.0f, -3.0f}, {-2.0f, 1.5f, -2.5f}, {2.0f, 1.5f, -2.5f} }, // Vatnajokull
             { {0.0f, 2.0f, -3.0f}, {-2.0f, 1.5f, -2.5f}, {2.0f, 1.5f, -2.5f} }  // Sondoong
@@ -292,6 +292,7 @@ public class MainActivity extends AppCompatActivity
             
             // Start audio narration
             audioEngine.stop();
+            audioEngine.setScene(caveIndex);
             audioEngine.speak(NARRATION_TEXTS[caveIndex]);
 
             ObjectAnimator fadeOut = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 1f, 0f);

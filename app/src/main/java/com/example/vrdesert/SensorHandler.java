@@ -83,9 +83,9 @@ public class SensorHandler implements SensorEventListener {
                 targetPitch += pitchDelta;
                 targetYaw += yawDelta;
 
-                // 2. CLAMP VERTICAL ROTATION (Between -45 and 45)
-                if (targetPitch > 45f) targetPitch = 45f;
-                if (targetPitch < -45f) targetPitch = -45f;
+                // 2. CLAMP VERTICAL ROTATION (Between -85 and 85)
+                if (targetPitch > 85f) targetPitch = 85f;
+                if (targetPitch < -85f) targetPitch = -85f;
                 
                 // 3. DUAL-CONDITION AUTO RECENTER SYSTEM
                 if (Math.abs(targetPitch) < 0.5f) {

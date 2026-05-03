@@ -1,111 +1,151 @@
 [
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_vatnajokull_2.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_vatnajokull_2.png"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_sondoong_2.jpeg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_sondoong_2.jpeg"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_lascaux_1.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_lascaux_1.png"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_ellora_1.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_ellora_1.png"
     },
     {
-        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\layout_activity_calibration.xml.flat",
-        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\layout\\activity_calibration.xml"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_ajanta_1.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_ajanta_1.jpg"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_sondoong_2.jpeg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_sondoong_2.jpeg"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_badami_3.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_badami_3.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_lascaux_2.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_lascaux_2.png"
     },
     {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\layout_activity_start.xml.flat",
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\layout\\activity_start.xml"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_ellora_2.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_ellora_2.png"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_vatnajokull_3.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_vatnajokull_3.jpg"
     },
     {
-        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_outerlook.jpg.flat",
-        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_outerlook.jpg"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_sondoong_1.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_sondoong_1.png"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_interior_sondoong.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/interior_sondoong.png"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_lascaux_3.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_lascaux_3.jpg"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_vatnajokull_3.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_vatnajokull_3.jpg"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_badami_1.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_badami_1.png"
-    },
-    {
-        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_drippingings.jpg.flat",
-        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_drippingings.jpg"
-    },
-    {
-        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_drippingings2.jpg.flat",
-        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_drippingings2.jpg"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_sondoong_3.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_sondoong_3.png"
     },
     {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_ellora.jpg.flat",
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_ellora.jpg"
     },
     {
-        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_vatnajokull.jpg.flat",
-        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_vatnajokull.jpg"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_ui_info_icon.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\ui_info_icon.png"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_waitomo_2.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_waitomo_2.png"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_lascaux_1.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_lascaux_1.png"
     },
     {
-        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_ajanta.jpg.flat",
-        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_ajanta.jpg"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_waitomo_3.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_waitomo_3.png"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_interior_ajanta.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/interior_ajanta.jpg"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_vatnajokull_1.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_vatnajokull_1.jpg"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_interior_vatnajokull.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\interior_vatnajokull.png"
     },
     {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_entranceorexit.jpg.flat",
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_entranceorexit.jpg"
     },
     {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_badami.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_badami.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_interior_badami.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\interior_badami.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_bg_landing.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\bg_landing.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_entering.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_entering.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_vatnajokull_2.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_vatnajokull_2.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_interior_ajanta.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\interior_ajanta.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_waitomo_1.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_waitomo_1.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_vatnajokull_1.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_vatnajokull_1.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_waitomo_2.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_waitomo_2.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\layout_activity_calibration.xml.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\layout\\activity_calibration.xml"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_ellora_3.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_ellora_3.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_outerlook.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_outerlook.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_interior_lascaux.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\interior_lascaux.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_drippingings.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_drippingings.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_vatnajokull.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_vatnajokull.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_drippingings2.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_drippingings2.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_ajanta.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_ajanta.jpg"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_ajanta_2.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_ajanta_2.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_sondoong_1.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_sondoong_1.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_badami_2.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_badami_2.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_ajanta_3.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_ajanta_3.jpg"
+    },
+    {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\layout_activity_story.xml.flat",
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\layout\\activity_story.xml"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_lascaux_2.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_lascaux_2.png"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_badami_3.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_badami_3.png"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_interior_ellora.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/interior_ellora.jpg"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_waitomo_1.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_waitomo_1.jpg"
-    },
-    {
-        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_badami.jpg.flat",
-        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_badami.jpg"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_ellora_2.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_ellora_2.png"
     },
     {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_lascaux.jpg.flat",
@@ -116,71 +156,43 @@
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\layout\\activity_main.xml"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_ajanta_2.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_ajanta_2.png"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_ellora_1.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_ellora_1.png"
-    },
-    {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_fromcave_outside_view.jpg.flat",
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\fromcave_outside_view.jpg"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_interior_badami.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/interior_badami.png"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_ajanta_1.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_ajanta_1.jpg"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_ellora_3.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_ellora_3.png"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_interior_waitomo.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\interior_waitomo.png"
     },
     {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_entrance_withwoodenfloor.jpg.flat",
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_entrance_withwoodenfloor.jpg"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_interior_vatnajokull.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/interior_vatnajokull.png"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_lascaux_3.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_lascaux_3.jpg"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_ajanta_3.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_ajanta_3.jpg"
+        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_particle_dot.png.flat",
+        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/particle_dot.png"
+    },
+    {
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_interior_sondoong.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\interior_sondoong.png"
     },
     {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_waitomo.jpg.flat",
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_waitomo.jpg"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_interior_waitomo.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/interior_waitomo.png"
-    },
-    {
-        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_entering.jpg.flat",
-        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_entering.jpg"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_sondoong_3.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_sondoong_3.png"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_interior_lascaux.jpg.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/interior_lascaux.jpg"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_interior_ellora.jpg.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\interior_ellora.jpg"
     },
     {
         "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_cave_sondoong.jpg.flat",
         "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\cave_sondoong.jpg"
     },
     {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_waitomo_3.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_waitomo_3.png"
-    },
-    {
-        "merged": "com.example.vrdesert.app-debug-4:/drawable-nodpi_insight_badami_2.png.flat",
-        "source": "com.example.vrdesert.app-main-6:/drawable-nodpi/insight_badami_2.png"
+        "merged": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-debug-4:\\drawable-nodpi_insight_badami_1.png.flat",
+        "source": "C:\\Users\\ksnau\\.gradle\\daemon\\8.13\\com.example.vrdesert.app-main-6:\\drawable-nodpi\\insight_badami_1.png"
     }
 ]

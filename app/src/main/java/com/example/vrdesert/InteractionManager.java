@@ -34,6 +34,10 @@ public class InteractionManager {
         return currentGazedObjectId != -1;
     }
 
+    public int getTargetId() {
+        return currentGazedObjectId;
+    }
+
     public float getGazeProgress() {
         if (currentGazedObjectId == -1) return 0;
         long elapsed = System.currentTimeMillis() - gazeStartTime;

@@ -1,0 +1,38 @@
+# Gradle files
+.gradle/
+build/
+app/build/
+
+# IntelliJ IDEA / Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Local configuration
+local.properties
+
+# Android specific
+captures/
+.externalNativeBuild
+.cxx
+cmake-build-debug/
+cmake-build-release/
+.navigation/
+
+# APKs / Bundles
+*.apk
+*.ap_
+*.aab
+
+# Keystore files
+*.jks
+*.keystore
+!debug.keystore
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
