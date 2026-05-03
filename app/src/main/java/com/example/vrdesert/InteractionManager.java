@@ -21,8 +21,8 @@ public class InteractionManager {
     private long gazeStartTime = 0;
     
     // Timer constants
-    private static final long GAZE_AUDIO_MS      = 2500;
-    private static final long GAZE_TRANSITION_MS = 5000;
+    private static final long GAZE_AUDIO_MS      = 3000;
+    private static final long GAZE_TRANSITION_MS = 3000;
     
     private boolean audioTriggered = false;
     private boolean transitionTriggered = false;
@@ -77,7 +77,8 @@ public class InteractionManager {
         float dot = (forwardX * dirX) + (forwardY * dirY) + (forwardZ * dirZ);
 
         // If the dot product is close to 1, the object is in the center of the gaze
-        if (dot > 0.90f && dist < 50f) { 
+        // Set to 0.95f for a slightly larger hitbox as requested
+        if (dot > 0.95f && dist < 50f) { 
             if (currentGazedObjectId != objectId) {
                 // New object gazed
                 if (currentGazedObjectId != -1) {
@@ -115,5 +116,14 @@ public class InteractionManager {
                 transitionTriggered = false;
             }
         }
+    }
+
+    public void resetGaze() {
+        if (currentGazedObjectId != -1) {
+            listener.onGazeEnded(currentGazedObjectId);
+            currentGazedObjectId = -1;
+        }
+        audioTriggered = false;
+        transitionTriggered = false;
     }
 }

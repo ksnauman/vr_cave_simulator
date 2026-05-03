@@ -29,12 +29,33 @@ public class AudioEngine {
     private volatile int currentScene = 0;
     private volatile float headYaw = 0f; // -180..180 degrees for spatial panning
     
+    private android.speech.tts.TextToSpeech tts;
     private MediaPlayer menuMusic;
     private Context context;
 
     public AudioEngine(Context context) {
         this.context = context;
         toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+        
+        tts = new android.speech.tts.TextToSpeech(context, status -> {
+            if (status != android.speech.tts.TextToSpeech.ERROR) {
+                tts.setLanguage(java.util.Locale.US);
+                tts.setPitch(0.9f);
+                tts.setSpeechRate(0.9f);
+            }
+        });
+    }
+
+    public void speak(String text) {
+        if (tts != null) {
+            tts.speak(text, android.speech.tts.TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+    }
+
+    public void stop() {
+        if (tts != null) {
+            tts.stop();
+        }
     }
 
     public void startMenuMusic() {

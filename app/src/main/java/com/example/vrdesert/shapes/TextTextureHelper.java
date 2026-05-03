@@ -25,7 +25,7 @@ public class TextTextureHelper {
         // Draw text
         Paint textPaint = new Paint();
         textPaint.setColor(Color.WHITE);
-        textPaint.setTextSize(60); // Larger font
+        textPaint.setTextSize(85); // Even larger font for better VR readability
         textPaint.setAntiAlias(true);
         textPaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         textPaint.setTextAlign(Paint.Align.CENTER);

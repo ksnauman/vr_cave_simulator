@@ -63,57 +63,18 @@
                 android:layout_height="wrap_content"
                 android:textColor="#B0D8F0"
                 android:textSize="14sp"
-                android:lineSpacingMultiplier="1.5" />
+                android:lineSpacingMultiplier="1.5"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/btnCloseInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="CLOSE"
+                android:textColor="#E8F4FF"
+                android:backgroundTint="#1A4A7A" />
         </LinearLayout>
     </FrameLayout>
-
-    <!-- Bottom Controls Bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_marginBottom="16dp">
-
-        <!-- Moves counter -->
-        <TextView
-            android:id="@+id/movesCounter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Moves: 3 / 3"
-            android:textColor="#80B0D0"
-            android:textSize="12sp"
-            android:letterSpacing="0.1"
-            android:layout_marginBottom="6dp" />
-
-
-
-        <!-- MOVE button -->
-        <Button
-            android:id="@+id/btnMove"
-            android:layout_width="160dp"
-            android:layout_height="48dp"
-            android:text="❄  MOVE"
-            android:textColor="#E8F4FF"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:backgroundTint="#1A4A7A" />
-
-    </LinearLayout>
-
-    <!-- Scene label (top centre) -->
-    <TextView
-        android:id="@+id/sceneLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="16dp"
-        android:text="The Frozen Gateway"
-        android:textColor="#90C8E8"
-        android:textSize="13sp"
-        android:letterSpacing="0.12"
-        android:shadowColor="#60000000"
-        android:shadowRadius="4" />
 
 </FrameLayout>

@@ -30,10 +30,9 @@ public class MainActivity extends AppCompatActivity
     private SensorHandler sensorHandler;
     private MoveServer moveServer;
     private AudioEngine audioEngine;
+    private InteractionManager interactionManager;
 
     // ── UI ─────────────────────────────────────────────────────────────────
-    private TextView movesCounter;
-    private TextView sceneLabel;
     private View sceneTransitionOverlay;
     private View infoCardContainer;
     private TextView infoCardTitle;
@@ -52,73 +51,111 @@ public class MainActivity extends AppCompatActivity
 
     // ── Scene data ─────────────────────────────────────────────────────────
     private static final String[] CAVE_NAMES = {
-            "Ajanta Caves",
-            "Badami Caves",
-            "Borra Caves",
-            "Belum Caves",
-            "Udayagiri Caves",
-            "Barabar Caves"
+            "Ajanta Caves (India)",
+            "Ellora Caves (India)",
+            "Badami Caves (India)",
+            "Waitomo Glowworm Caves (New Zealand)",
+            "Lascaux Cave (France)",
+            "Vatnajökull Ice Cave (Iceland)",
+            "Son Doong Cave (Vietnam)"
     };
 
     private static final String[] CAVE_STATES = {
-            "Maharashtra",
-            "Karnataka",
-            "Andhra Pradesh",
-            "Andhra Pradesh",
-            "Odisha",
-            "Bihar"
+            "Maharashtra, India",
+            "Maharashtra, India",
+            "Karnataka, India",
+            "Waitomo, New Zealand",
+            "Montignac, France",
+            "Vatnajökull, Iceland",
+            "Quang Binh, Vietnam"
     };
     // Note: You can add all 28 states here. The menu will automatically arrange
     // them in a circle.
 
     private static final String[] NARRATION_TEXTS = {
-            "The Ajanta Caves in Maharashtra are a series of 29 Buddhist cave monuments dating from the 2nd century BCE. They represent some of the finest examples of ancient Indian art and architecture.",
-            "The Badami cave temples in Karnataka are a complex of Hindu, Jain, and possibly Buddhist cave temples. They are famous for their rock-cut architecture dating back to the 6th century.",
-            "Borra Caves in Andhra Pradesh are located in the Ananthagiri hills and are one of the deepest caves in India. They are known for their magnificent stalactite and stalagmite formations.",
-            "The Udayagiri and Khandagiri Caves in Odisha are partly natural and partly artificial caves of archaeological, historical and religious importance dating back to the 1st century BCE."
+            "The Ajanta Caves are a series of 29 Buddhist cave monuments in Maharashtra, India. They are famous for their magnificent ancient murals and sculptures dating back to the 2nd century BCE.",
+            "The Ellora Caves are a UNESCO World Heritage site in India, featuring Hindu, Buddhist, and Jain monuments. The masterpiece is the monolithic Kailasa Temple, carved from a single rock.",
+            "The Badami cave temples are a complex of Hindu and Jain cave temples located in Karnataka, India. They are famous for their rock-cut architecture dating back to the 6th century.",
+            "Welcome to the Waitomo Glowworm Caves in New Zealand. Look up at the ceiling to see thousands of Arachnocampa luminosa glowworms, creating a magical starry sky underground.",
+            "The Lascaux Cave in France is famous for its Paleolithic cave paintings, which are estimated to be over 17,000 years old. They depict large animals and human figures in stunning detail.",
+            "Step into the Vatnajökull Ice Cave in Iceland. Formed within the largest glacier in Europe, these caves feature deep blue translucent ice walls that change shape every year.",
+            "You are inside Son Doong, the world's largest cave. Located in Vietnam, this massive cavern is so large it has its own internal jungle, river, and even its own weather system."
     };
 
-    // Insight data: [scene 0‑3][button 0‑2][title, body]
-    private static final String[][][] INSIGHTS = {
-            // ── Scene 0 — The Frozen Gateway (dark ice tunnel, silhouettes walking in) ──
+    // ── Insight Data (7 caves, 3 hotspots each) ──────────────────────────
+    private static final int[] INTERIOR_DRAWABLES = {
+            R.drawable.interior_ajanta,
+            R.drawable.interior_ellora,
+            R.drawable.interior_badami,
+            R.drawable.interior_waitomo,
+            R.drawable.interior_lascaux,
+            R.drawable.interior_vatnajokull,
+            R.drawable.interior_sondoong
+    };
+
+    private static final int[][] INSIGHT_DRAWABLES = {
+            { R.drawable.insight_ajanta_1, R.drawable.insight_ajanta_2, R.drawable.insight_ajanta_3 },
+            { R.drawable.insight_ellora_1, R.drawable.insight_ellora_2, R.drawable.insight_ellora_3 },
+            { R.drawable.insight_badami_1, R.drawable.insight_badami_2, R.drawable.insight_badami_3 },
+            { R.drawable.insight_waitomo_1, R.drawable.insight_waitomo_2, R.drawable.insight_waitomo_3 },
+            { R.drawable.insight_lascaux_1, R.drawable.insight_lascaux_2, R.drawable.insight_lascaux_3 },
+            { R.drawable.insight_vatnajokull_1, R.drawable.insight_vatnajokull_2, R.drawable.insight_vatnajokull_3 },
+            { R.drawable.insight_sondoong_1, R.drawable.insight_sondoong_2, R.drawable.insight_sondoong_3 }
+    };
+
+    private static final String[][][] INSIGHT_TEXTS = {
+            // Ajanta
             {
-                    { "❄ How Tunnels Form",
-                            "This perfectly oval passage was carved not by hand but by meltwater boring through glacial ice over decades. Liquid water always finds the smallest weakness in solid ice — drilling downward and outward until a passage like this forms." },
-                    { "💡 The Light Ahead",
-                            "That circle of daylight at the tunnel's far end is the strongest magnet in any ice cave. Ice transmits blue wavelengths most efficiently, which is why the glow has an ethereal, almost supernatural quality compared to ordinary sunlight." },
-                    { "🧊 Temperature Drop",
-                            "As you step inside, the temperature drops 10–15°C within a few metres. The ice surrounding you acts as an insulator far more effective than concrete — maintaining a near-constant subzero environment regardless of what the weather is doing outside." }
+                    { "The Center Statue", "This magnificent statue of Buddha represents the state of deep meditation. Notice the intricate details of the hands, symbolic of mudras." },
+                    { "Left Carvings", "These wall carvings depict scenes from the Jataka tales, stories of the previous lives of Buddha before enlightenment." },
+                    { "Right Carvings", "The right gallery features detailed architecture showing how ancient monks carved directly into the basalt rock." }
             },
-            // ── Scene 1 — The Icicle Curtains (frozen waterfall columns, dark rock behind)
-            // ──
+            // Ellora
             {
-                    { "🏔 Frozen Waterfalls",
-                            "What you see here are called ice curtains or frozen waterfalls. When water seeps through cracks in the rock above and meets subzero cave air, it freezes mid-flow. Each column grew one freeze-cycle at a time — some of these formations are decades old." },
-                    { "🪨 Rock Behind Ice",
-                            "Notice the dark layered rock visible behind the ice. These are sedimentary strata — each horizontal band represents thousands of years of geological sedimentation. The ice clinging to them is a newcomer; the rock itself may be 400 million years old." },
-                    { "⚖ Weight of Ice",
-                            "The largest ice curtain columns you see can weigh over one tonne each. Despite their delicate, translucent appearance, they are structurally dense — the ice near the base is compressed so hard that it contains almost no air bubbles at all." }
+                    { "Central Dome", "The interior of the Kailasa temple shows the incredible engineering required to carve a temple from the top down." },
+                    { "Left Pillars", "These massive monolithic pillars were carved from the same rock as the temple itself, providing structural and aesthetic grandeur." },
+                    { "Right Pillars", "The right side of the main hall contains carvings of various deities, showing the religious diversity of the site." }
             },
-            // ── Scene 2 — The Crystal Cathedral (thousands of icicles hanging from
-            // ceiling) ──
+            // Badami
             {
-                    { "💧 Icicle Growth",
-                            "Each single icicle here grows roughly 1 centimetre per day under ideal conditions. A water droplet arrives, partially freezes, and leaves a thin ice ring before the next drop comes. The largest ones here may have been growing for 10 years or more." },
-                    { "🔵 Why Blue Light?",
-                            "The ethereal blue-grey light filtering through the ceiling comes from the physics of glacial ice. Dense ice absorbs red and yellow wavelengths and lets only blue pass through. The deeper and denser the ice, the purer and more intense the blue." },
-                    { "🤫 Total Silence",
-                            "Ice caves are among the quietest places on Earth. The ice and rock around you absorb nearly all sound — no echo, no ambient hum. Scientists have measured near-zero decibel levels in chambers like this. Many first-time visitors hear their own heartbeat for the first time." }
+                    { "The Entrance", "Looking back at the entrance, you can see how the morning sun illuminates the red sandstone interior." },
+                    { "Wall Carvings", "These carvings depict ancient legends, showing the high level of craftsmanship in the 6th century Chalukya period." },
+                    { "Pillars", "The fluted pillars are a signature of Badami architecture, supporting the weight of the massive rock above." }
             },
-            // ── Scene 3 — The Blue Window (looking out from cave interior to outside
-            // world) ──
+            // Waitomo
             {
-                    { "🪟 The Portal Effect",
-                            "This view — looking out from the cave's inner chamber — is one of the most photographed compositions in glacial photography. The blue glacial ice frames the external world like a stained-glass window, creating a stark contrast between frozen stillness inside and life outside." },
-                    { "🌋 Outside the Ice",
-                            "What you see beyond the cave mouth is Iceland's volcanic rock plain, covered in a thin frost layer. The glacier you are standing inside sits directly atop ancient lava flows — a river of compacted ice, thousands of years old, moving millimetres per day toward the sea." },
-                    { "⏳ Ice as History",
-                            "The ice forming the ceiling above you may be 500–1,000 years old. Climate scientists drill ice cores from glaciers like this to study ancient atmospheres — each compressed layer is a year of snowfall, preserving bubbles of air from centuries gone by." }
+                    { "Glow Ceiling", "Looking up, you see thousands of bioluminescent glowworms. They use this light to attract tiny insects in the dark." },
+                    { "Water Reflection", "The still water below creates a perfect mirror, doubling the starry effect of the glowworms on the ceiling." },
+                    { "Cave Depth", "Further into the cave, the passages narrow, leading into deeper, unexplored limestone chambers." }
+            },
+            // Lascaux
+            {
+                    { "Main Wall Painting", "The Great Hall of the Bulls contains some of the most famous prehistoric art in the world, over 17,000 years old." },
+                    { "Animal Close-up", "Notice how the ancient artists used the natural bumps in the cave wall to give the animals a 3D, muscular appearance." },
+                    { "Texture Detail", "The red and yellow ochre paints were made from crushed minerals and have survived for millennia in the cave's constant environment." }
+            },
+            // Vatnajokull
+            {
+                    { "Ice Ceiling", "The ceiling is made of deep, compressed glacial ice. The bubbles have been squeezed out, leaving only pure blue crystal." },
+                    { "Ice Textures", "These scalloped textures are formed by warm air currents melting the ice in a specific pattern over time." },
+                    { "Ice Formations", "Notice the columns of ice where water has frozen mid-drip, creating a temporary museum of natural sculpture." }
+            },
+            // Son Doong
+            {
+                    { "The Skylight", "This massive hole in the ceiling, called a doline, allows sunlight to reach the cave floor, creating an internal jungle." },
+                    { "Cave Vegetation", "The jungle inside, called the Garden of Edam, contains plants and animals found nowhere else on earth." },
+                    { "Cave Depth", "Son Doong is so large that a 40-story skyscraper could fit inside its largest chamber." }
             }
+    };
+
+    private static final float[][][] HOTSPOT_POSITIONS = {
+            { {0.0f, 1.5f, -3.0f}, {-2.0f, 1.5f, -2.5f}, {2.0f, 1.5f, -2.5f} }, // Ajanta
+            { {0.0f, 1.5f, -3.0f}, {-2.5f, 1.5f, -2.5f}, {2.5f, 1.5f, -2.5f} }, // Ellora
+            { {0.0f, 1.5f, -3.0f}, {-2.0f, 1.5f, -2.0f}, {2.0f, 1.5f, -2.0f} }, // Badami
+            { {0.0f, 2.0f, -3.0f}, {0.0f, 1.0f, -2.0f},  {0.0f, 1.5f, -4.0f} }, // Waitomo
+            { {0.0f, 1.5f, -3.0f}, {-2.0f, 1.5f, -2.5f}, {2.0f, 1.5f, -2.5f} }, // Lascaux
+            { {0.0f, 2.0f, -3.0f}, {-2.0f, 1.5f, -2.5f}, {2.0f, 1.5f, -2.5f} }, // Vatnajokull
+            { {0.0f, 2.0f, -3.0f}, {-2.0f, 1.5f, -2.5f}, {2.0f, 1.5f, -2.5f} }  // Sondoong
     };
 
     // ── Lifecycle ──────────────────────────────────────────────────────────
@@ -133,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 
         sensorHandler = new SensorHandler(this);
         // InteractionManager to handle gaze collection of 3D objects
-        InteractionManager interactionManager = new InteractionManager(this);
+        interactionManager = new InteractionManager(this);
 
         vrRenderer = new VRRenderer(this, sensorHandler, interactionManager);
         vrRenderer.setCaveData(CAVE_NAMES);
@@ -141,18 +178,10 @@ public class MainActivity extends AppCompatActivity
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         // UI references
-        movesCounter = findViewById(R.id.movesCounter);
-        sceneLabel = findViewById(R.id.sceneLabel);
         sceneTransitionOverlay = findViewById(R.id.sceneTransitionOverlay);
         infoCardContainer = findViewById(R.id.infoCardContainer);
         infoCardTitle = findViewById(R.id.infoCardTitle);
         infoCardBody = findViewById(R.id.infoCardBody);
-
-        updateSceneLabel();
-
-        // MOVE button (Removed for gaze-only interaction)
-        // Button btnMove = findViewById(R.id.btnMove);
-        // if (btnMove != null) btnMove.setOnClickListener(v -> attemptMove());
 
         // Info card close
         Button btnClose = findViewById(R.id.btnCloseInfo);
@@ -208,6 +237,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void returnToLanding() {
+        if (currentState == VRState.INSIDE_CAVE) {
+            interactionManager.resetGaze();
+            currentState = VRState.LANDING;
+        }
+
         if (transitioning)
             return;
         transitioning = true;
@@ -233,6 +267,11 @@ public class MainActivity extends AppCompatActivity
 
     // ── Move Logic ─────────────────────────────────────────────────────────
     public void enterCave(int caveIndex) {
+        if (currentState == VRState.LANDING) {
+            interactionManager.resetGaze();
+            currentState = VRState.INSIDE_CAVE;
+        }
+
         if (transitioning)
             return;
         selectedCaveIndex = caveIndex;
@@ -244,14 +283,16 @@ public class MainActivity extends AppCompatActivity
         fadeIn.start();
 
         stateHandler.postDelayed(() -> {
+            interactionManager.resetGaze();
             currentState = VRState.INSIDE_CAVE;
+            
+            // Set up specific cave scene data in renderer
             vrRenderer.setCaveScene(caveIndex);
-
-            // Start full history audio
-            playFullHistory(caveIndex);
-
-            // UI Update
-            sceneLabel.setText(CAVE_NAMES[caveIndex]);
+            vrRenderer.setHotspotPositions(HOTSPOT_POSITIONS[caveIndex]);
+            
+            // Start audio narration
+            audioEngine.stop();
+            audioEngine.speak(NARRATION_TEXTS[caveIndex]);
 
             ObjectAnimator fadeOut = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 1f, 0f);
             fadeOut.setDuration(500);
@@ -263,9 +304,9 @@ public class MainActivity extends AppCompatActivity
         }, 600);
     }
 
-    // ── Insight Cards ──────────────────────────────────────────────────────
+    // ── Insight Cards (Legacy 2D support, updated to use new data) ────────
     private void showInsight(int buttonIndex) {
-        String[] data = INSIGHTS[selectedCaveIndex != -1 ? selectedCaveIndex : 0][buttonIndex];
+        String[] data = INSIGHT_TEXTS[selectedCaveIndex != -1 ? selectedCaveIndex : 0][buttonIndex];
         infoCardTitle.setText(data[0]);
         infoCardBody.setText(data[1]);
 
@@ -288,14 +329,7 @@ public class MainActivity extends AppCompatActivity
         }, 200);
     }
 
-    // ── UI helpers ─────────────────────────────────────────────────────────
-    private void updateSceneLabel() {
-        if (selectedCaveIndex != -1) {
-            sceneLabel.setText(CAVE_NAMES[selectedCaveIndex]);
-        } else {
-            sceneLabel.setText("Cave Selection Menu");
-        }
-    }
+    // ── UI helpers removed ──────────────────────────────────────────────────
 
     // ── Lifecycle: GL + Sensor ─────────────────────────────────────────────
     @Override
@@ -342,9 +376,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onNarrationTriggered(int caveId) {
+    public void onNarrationTriggered(int objectId) {
         if (currentState == VRState.LANDING) {
-            playNarration(caveId);
+            playNarration(objectId);
+        } else if (currentState == VRState.INSIDE_CAVE && objectId >= 100 && objectId <= 102) {
+            int insightIdx = objectId - 100;
+            String[] data = INSIGHT_TEXTS[selectedCaveIndex][insightIdx];
+
+            // Show insight in VR
+            vrRenderer.showInsightPanel(insightIdx);
+
+            // Speak description
+            audioEngine.stop();
+            audioEngine.speak(data[0] + ". " + data[1]);
         }
     }
 
