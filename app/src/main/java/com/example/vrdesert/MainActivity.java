@@ -9,77 +9,117 @@ import android.widget.Toast;
 import android.opengl.GLSurfaceView;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.media.MediaPlayer;
+import android.os.Handler;
+import android.os.Looper;
+import android.speech.tts.TextToSpeech;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity
-        implements InteractionManager.InteractionListener, RemoteControlListener {
+        implements InteractionManager.InteractionListener {
+
+    public enum VRState {
+        LANDING,
+        TRANSITIONING,
+        INSIDE_CAVE
+    }
 
     // ── GL / VR ────────────────────────────────────────────────────────────
     private GLSurfaceView glSurfaceView;
-    private VRRenderer    vrRenderer;
+    private VRRenderer vrRenderer;
     private SensorHandler sensorHandler;
-    private MoveServer    moveServer;
-    private AudioEngine   audioEngine;
+    private MoveServer moveServer;
+    private AudioEngine audioEngine;
 
     // ── UI ─────────────────────────────────────────────────────────────────
     private TextView movesCounter;
     private TextView sceneLabel;
-    private View     sceneTransitionOverlay;
-    private View     infoCardContainer;
+    private View sceneTransitionOverlay;
+    private View infoCardContainer;
     private TextView infoCardTitle;
     private TextView infoCardBody;
 
-    // ── Move state ─────────────────────────────────────────────────────────
-    private int movesLeft = 3; 
-    private int currentScene = 0;   // 0..3
-    private boolean transitioning  = false;
+    // ── State management ──────────────────────────────────────────────────
+    private VRState currentState = VRState.LANDING;
+    private int selectedCaveIndex = -1;
+    private boolean transitioning = false;
+    private TextToSpeech tts;
+
+    // ── Audio ──────────────────────────────────────────────────────────────
+    private MediaPlayer narrationPlayer;
+    private MediaPlayer menuMusicPlayer;
+    private Handler stateHandler = new Handler(Looper.getMainLooper());
 
     // ── Scene data ─────────────────────────────────────────────────────────
-    private static final String[] SCENE_LABELS = {
-        "The Frozen Gateway",       // cave_entering.jpg  — dark tunnel, entry point
-        "The Icicle Curtains",      // cave_drippingings.jpg — close-up frozen waterfall
-        "The Crystal Cathedral",    // cave_drippingings2.jpg — dense icicle ceiling
-        "The Blue Window"           // fromcave_outside_view.jpg — looking out to world
+    private static final String[] CAVE_NAMES = {
+            "Ajanta Caves",
+            "Badami Caves",
+            "Borra Caves",
+            "Belum Caves",
+            "Udayagiri Caves",
+            "Barabar Caves"
+    };
+
+    private static final String[] CAVE_STATES = {
+            "Maharashtra",
+            "Karnataka",
+            "Andhra Pradesh",
+            "Andhra Pradesh",
+            "Odisha",
+            "Bihar"
+    };
+    // Note: You can add all 28 states here. The menu will automatically arrange
+    // them in a circle.
+
+    private static final String[] NARRATION_TEXTS = {
+            "The Ajanta Caves in Maharashtra are a series of 29 Buddhist cave monuments dating from the 2nd century BCE. They represent some of the finest examples of ancient Indian art and architecture.",
+            "The Badami cave temples in Karnataka are a complex of Hindu, Jain, and possibly Buddhist cave temples. They are famous for their rock-cut architecture dating back to the 6th century.",
+            "Borra Caves in Andhra Pradesh are located in the Ananthagiri hills and are one of the deepest caves in India. They are known for their magnificent stalactite and stalagmite formations.",
+            "The Udayagiri and Khandagiri Caves in Odisha are partly natural and partly artificial caves of archaeological, historical and religious importance dating back to the 1st century BCE."
     };
 
     // Insight data: [scene 0‑3][button 0‑2][title, body]
     private static final String[][][] INSIGHTS = {
-        // ── Scene 0 — The Frozen Gateway (dark ice tunnel, silhouettes walking in) ──
-        {
-            { "❄ How Tunnels Form",
-              "This perfectly oval passage was carved not by hand but by meltwater boring through glacial ice over decades. Liquid water always finds the smallest weakness in solid ice — drilling downward and outward until a passage like this forms." },
-            { "💡 The Light Ahead",
-              "That circle of daylight at the tunnel's far end is the strongest magnet in any ice cave. Ice transmits blue wavelengths most efficiently, which is why the glow has an ethereal, almost supernatural quality compared to ordinary sunlight." },
-            { "🧊 Temperature Drop",
-              "As you step inside, the temperature drops 10–15°C within a few metres. The ice surrounding you acts as an insulator far more effective than concrete — maintaining a near-constant subzero environment regardless of what the weather is doing outside." }
-        },
-        // ── Scene 1 — The Icicle Curtains (frozen waterfall columns, dark rock behind) ──
-        {
-            { "🏔 Frozen Waterfalls",
-              "What you see here are called ice curtains or frozen waterfalls. When water seeps through cracks in the rock above and meets subzero cave air, it freezes mid-flow. Each column grew one freeze-cycle at a time — some of these formations are decades old." },
-            { "🪨 Rock Behind Ice",
-              "Notice the dark layered rock visible behind the ice. These are sedimentary strata — each horizontal band represents thousands of years of geological sedimentation. The ice clinging to them is a newcomer; the rock itself may be 400 million years old." },
-            { "⚖ Weight of Ice",
-              "The largest ice curtain columns you see can weigh over one tonne each. Despite their delicate, translucent appearance, they are structurally dense — the ice near the base is compressed so hard that it contains almost no air bubbles at all." }
-        },
-        // ── Scene 2 — The Crystal Cathedral (thousands of icicles hanging from ceiling) ──
-        {
-            { "💧 Icicle Growth",
-              "Each single icicle here grows roughly 1 centimetre per day under ideal conditions. A water droplet arrives, partially freezes, and leaves a thin ice ring before the next drop comes. The largest ones here may have been growing for 10 years or more." },
-            { "🔵 Why Blue Light?",
-              "The ethereal blue-grey light filtering through the ceiling comes from the physics of glacial ice. Dense ice absorbs red and yellow wavelengths and lets only blue pass through. The deeper and denser the ice, the purer and more intense the blue." },
-            { "🤫 Total Silence",
-              "Ice caves are among the quietest places on Earth. The ice and rock around you absorb nearly all sound — no echo, no ambient hum. Scientists have measured near-zero decibel levels in chambers like this. Many first-time visitors hear their own heartbeat for the first time." }
-        },
-        // ── Scene 3 — The Blue Window (looking out from cave interior to outside world) ──
-        {
-            { "🪟 The Portal Effect",
-              "This view — looking out from the cave's inner chamber — is one of the most photographed compositions in glacial photography. The blue glacial ice frames the external world like a stained-glass window, creating a stark contrast between frozen stillness inside and life outside." },
-            { "🌋 Outside the Ice",
-              "What you see beyond the cave mouth is Iceland's volcanic rock plain, covered in a thin frost layer. The glacier you are standing inside sits directly atop ancient lava flows — a river of compacted ice, thousands of years old, moving millimetres per day toward the sea." },
-            { "⏳ Ice as History",
-              "The ice forming the ceiling above you may be 500–1,000 years old. Climate scientists drill ice cores from glaciers like this to study ancient atmospheres — each compressed layer is a year of snowfall, preserving bubbles of air from centuries gone by." }
-        }
+            // ── Scene 0 — The Frozen Gateway (dark ice tunnel, silhouettes walking in) ──
+            {
+                    { "❄ How Tunnels Form",
+                            "This perfectly oval passage was carved not by hand but by meltwater boring through glacial ice over decades. Liquid water always finds the smallest weakness in solid ice — drilling downward and outward until a passage like this forms." },
+                    { "💡 The Light Ahead",
+                            "That circle of daylight at the tunnel's far end is the strongest magnet in any ice cave. Ice transmits blue wavelengths most efficiently, which is why the glow has an ethereal, almost supernatural quality compared to ordinary sunlight." },
+                    { "🧊 Temperature Drop",
+                            "As you step inside, the temperature drops 10–15°C within a few metres. The ice surrounding you acts as an insulator far more effective than concrete — maintaining a near-constant subzero environment regardless of what the weather is doing outside." }
+            },
+            // ── Scene 1 — The Icicle Curtains (frozen waterfall columns, dark rock behind)
+            // ──
+            {
+                    { "🏔 Frozen Waterfalls",
+                            "What you see here are called ice curtains or frozen waterfalls. When water seeps through cracks in the rock above and meets subzero cave air, it freezes mid-flow. Each column grew one freeze-cycle at a time — some of these formations are decades old." },
+                    { "🪨 Rock Behind Ice",
+                            "Notice the dark layered rock visible behind the ice. These are sedimentary strata — each horizontal band represents thousands of years of geological sedimentation. The ice clinging to them is a newcomer; the rock itself may be 400 million years old." },
+                    { "⚖ Weight of Ice",
+                            "The largest ice curtain columns you see can weigh over one tonne each. Despite their delicate, translucent appearance, they are structurally dense — the ice near the base is compressed so hard that it contains almost no air bubbles at all." }
+            },
+            // ── Scene 2 — The Crystal Cathedral (thousands of icicles hanging from
+            // ceiling) ──
+            {
+                    { "💧 Icicle Growth",
+                            "Each single icicle here grows roughly 1 centimetre per day under ideal conditions. A water droplet arrives, partially freezes, and leaves a thin ice ring before the next drop comes. The largest ones here may have been growing for 10 years or more." },
+                    { "🔵 Why Blue Light?",
+                            "The ethereal blue-grey light filtering through the ceiling comes from the physics of glacial ice. Dense ice absorbs red and yellow wavelengths and lets only blue pass through. The deeper and denser the ice, the purer and more intense the blue." },
+                    { "🤫 Total Silence",
+                            "Ice caves are among the quietest places on Earth. The ice and rock around you absorb nearly all sound — no echo, no ambient hum. Scientists have measured near-zero decibel levels in chambers like this. Many first-time visitors hear their own heartbeat for the first time." }
+            },
+            // ── Scene 3 — The Blue Window (looking out from cave interior to outside
+            // world) ──
+            {
+                    { "🪟 The Portal Effect",
+                            "This view — looking out from the cave's inner chamber — is one of the most photographed compositions in glacial photography. The blue glacial ice frames the external world like a stained-glass window, creating a stark contrast between frozen stillness inside and life outside." },
+                    { "🌋 Outside the Ice",
+                            "What you see beyond the cave mouth is Iceland's volcanic rock plain, covered in a thin frost layer. The glacier you are standing inside sits directly atop ancient lava flows — a river of compacted ice, thousands of years old, moving millimetres per day toward the sea." },
+                    { "⏳ Ice as History",
+                            "The ice forming the ceiling above you may be 500–1,000 years old. Climate scientists drill ice cores from glaciers like this to study ancient atmospheres — each compressed layer is a year of snowfall, preserving bubbles of air from centuries gone by." }
+            }
     };
-
 
     // ── Lifecycle ──────────────────────────────────────────────────────────
     @Override
@@ -96,80 +136,136 @@ public class MainActivity extends AppCompatActivity
         InteractionManager interactionManager = new InteractionManager(this);
 
         vrRenderer = new VRRenderer(this, sensorHandler, interactionManager);
+        vrRenderer.setCaveData(CAVE_NAMES);
         glSurfaceView.setRenderer(vrRenderer);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 
         // UI references
-        movesCounter           = findViewById(R.id.movesCounter);
-        sceneLabel             = findViewById(R.id.sceneLabel);
+        movesCounter = findViewById(R.id.movesCounter);
+        sceneLabel = findViewById(R.id.sceneLabel);
         sceneTransitionOverlay = findViewById(R.id.sceneTransitionOverlay);
-        infoCardContainer      = findViewById(R.id.infoCardContainer);
-        infoCardTitle          = findViewById(R.id.infoCardTitle);
-        infoCardBody           = findViewById(R.id.infoCardBody);
+        infoCardContainer = findViewById(R.id.infoCardContainer);
+        infoCardTitle = findViewById(R.id.infoCardTitle);
+        infoCardBody = findViewById(R.id.infoCardBody);
 
-        updateMovesCounter();
         updateSceneLabel();
 
-        // MOVE button (manual)
-        Button btnMove = findViewById(R.id.btnMove);
-        btnMove.setOnClickListener(v -> attemptMove());
+        // MOVE button (Removed for gaze-only interaction)
+        // Button btnMove = findViewById(R.id.btnMove);
+        // if (btnMove != null) btnMove.setOnClickListener(v -> attemptMove());
+
+        // Info card close
+        Button btnClose = findViewById(R.id.btnCloseInfo);
+        if (btnClose != null)
+            btnClose.setOnClickListener(v -> hideInfoCard());
 
         // Audio engine
-        audioEngine = new AudioEngine();
+        audioEngine = new AudioEngine(this);
 
-        // Remote controller server
-        moveServer = new MoveServer(this);
-        moveServer.start();
+        // Initialize TTS
+        tts = new TextToSpeech(this, status -> {
+            if (status != TextToSpeech.ERROR) {
+                tts.setLanguage(Locale.US);
+            }
+        });
     }
 
-    // ── Move Logic ─────────────────────────────────────────────────────────
-    public void attemptMove() {
-        android.util.Log.d("MainActivity", "attemptMove() called. movesLeft=" + movesLeft + ", transitioning=" + transitioning);
-        if (transitioning) return;
+    private void startMenuMusic() {
+        // Background music removed
+    }
 
-        if (movesLeft <= 0) {
-            showFinalFact();
-            return;
+    private void playNarration(int index) {
+        String name = CAVE_NAMES[index % CAVE_NAMES.length];
+        String state = CAVE_STATES[index % CAVE_STATES.length];
+        String speechText = name + ", " + state;
+        if (tts != null) {
+            tts.speak(speechText, TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+        Toast.makeText(this, "Selected: " + name, Toast.LENGTH_SHORT).show();
+    }
+
+    private void playFullHistory(int index) {
+        if (narrationPlayer != null) {
+            narrationPlayer.release();
+        }
+        String history = NARRATION_TEXTS[index % NARRATION_TEXTS.length];
+        if (tts != null) {
+            tts.speak(history, TextToSpeech.QUEUE_ADD, null, null);
         }
 
-        movesLeft--;
-        currentScene = Math.min(currentScene + 1, 3);
+        // Mocking narration finish for auto-exit logic
+        stateHandler.postDelayed(() -> {
+            onNarrationFinished();
+        }, 15000);
+    }
+
+    private void onNarrationFinished() {
+        if (currentState == VRState.INSIDE_CAVE) {
+            stateHandler.postDelayed(() -> {
+                returnToLanding();
+            }, 3000); // 3 seconds wait
+        }
+    }
+
+    private void returnToLanding() {
+        if (transitioning)
+            return;
         transitioning = true;
 
-        // Frost-white transition animation
         sceneTransitionOverlay.setVisibility(View.VISIBLE);
         ObjectAnimator fadeIn = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 0f, 1f);
-        fadeIn.setDuration(350);
+        fadeIn.setDuration(500);
         fadeIn.start();
 
-        sceneTransitionOverlay.postDelayed(() -> {
-            // Switch scene in renderer
-            vrRenderer.setScene(currentScene);
-            vrRenderer.moveForward(); // keeps visual motion burst
+        stateHandler.postDelayed(() -> {
+            currentState = VRState.LANDING;
+            vrRenderer.setState(VRRenderer.State.LANDING);
 
-            // Update audio scene
-            if (audioEngine != null) {
-                audioEngine.setScene(currentScene);
-            }
-
-            // Update UI
-            updateMovesCounter();
-            updateSceneLabel();
-
-            // Fade overlay back out
             ObjectAnimator fadeOut = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 1f, 0f);
             fadeOut.setDuration(500);
             fadeOut.start();
-            sceneTransitionOverlay.postDelayed(() -> {
+            stateHandler.postDelayed(() -> {
                 sceneTransitionOverlay.setVisibility(View.GONE);
                 transitioning = false;
             }, 500);
-        }, 380);
+        }, 600);
+    }
+
+    // ── Move Logic ─────────────────────────────────────────────────────────
+    public void enterCave(int caveIndex) {
+        if (transitioning)
+            return;
+        selectedCaveIndex = caveIndex;
+        transitioning = true;
+
+        sceneTransitionOverlay.setVisibility(View.VISIBLE);
+        ObjectAnimator fadeIn = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 0f, 1f);
+        fadeIn.setDuration(500);
+        fadeIn.start();
+
+        stateHandler.postDelayed(() -> {
+            currentState = VRState.INSIDE_CAVE;
+            vrRenderer.setCaveScene(caveIndex);
+
+            // Start full history audio
+            playFullHistory(caveIndex);
+
+            // UI Update
+            sceneLabel.setText(CAVE_NAMES[caveIndex]);
+
+            ObjectAnimator fadeOut = ObjectAnimator.ofFloat(sceneTransitionOverlay, "alpha", 1f, 0f);
+            fadeOut.setDuration(500);
+            fadeOut.start();
+            stateHandler.postDelayed(() -> {
+                sceneTransitionOverlay.setVisibility(View.GONE);
+                transitioning = false;
+            }, 500);
+        }, 600);
     }
 
     // ── Insight Cards ──────────────────────────────────────────────────────
     private void showInsight(int buttonIndex) {
-        String[] data = INSIGHTS[currentScene][buttonIndex];
+        String[] data = INSIGHTS[selectedCaveIndex != -1 ? selectedCaveIndex : 0][buttonIndex];
         infoCardTitle.setText(data[0]);
         infoCardBody.setText(data[1]);
 
@@ -193,24 +289,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     // ── UI helpers ─────────────────────────────────────────────────────────
-    private void updateMovesCounter() {
-        movesCounter.setText("Moves: " + movesLeft + " / 3");
-    }
-
     private void updateSceneLabel() {
-        sceneLabel.setText(SCENE_LABELS[currentScene]);
+        if (selectedCaveIndex != -1) {
+            sceneLabel.setText(CAVE_NAMES[selectedCaveIndex]);
+        } else {
+            sceneLabel.setText("Cave Selection Menu");
+        }
     }
-
-    private void showFinalFact() {
-        infoCardTitle.setText("❄  The Eternal Cycle");
-        infoCardBody.setText("You have reached the deepest point of the cave. These glaciers act as Earth's memory, storing air and water from thousands of years ago. As the ice moves and melts, it returns that ancient history to the oceans, continuing a cycle that has shaped our planet for eons.\n\nThank you for exploring the Frozen Gateway.");
-        
-        infoCardContainer.setAlpha(0f);
-        infoCardContainer.setVisibility(View.VISIBLE);
-        ObjectAnimator.ofFloat(infoCardContainer, "alpha", 0f, 1f).setDuration(500).start();
-    }
-
-
 
     // ── Lifecycle: GL + Sensor ─────────────────────────────────────────────
     @Override
@@ -238,32 +323,41 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (moveServer != null) moveServer.stopServer();
+        if (moveServer != null)
+            moveServer.stopServer();
+    }
+
+    @Override
+    public void onGazeStarted(int objectId) {
+        if (currentState == VRState.LANDING) {
+            vrRenderer.highlightCard(objectId, true);
+        }
+    }
+
+    @Override
+    public void onGazeEnded(int objectId) {
+        if (currentState == VRState.LANDING) {
+            vrRenderer.highlightCard(objectId, false);
+        }
+    }
+
+    @Override
+    public void onNarrationTriggered(int caveId) {
+        if (currentState == VRState.LANDING) {
+            playNarration(caveId);
+        }
+    }
+
+    @Override
+    public void onTransitionTriggered(int caveId) {
+        if (currentState == VRState.LANDING) {
+            enterCave(caveId);
+        }
     }
 
     @Override
     public void onObjectCollected(int objectId, GameObject.Type type) {
-        // No longer using collection timer for info buttons
-    }
-
-    @Override
-    public void onHoverEnter(int objectId) {
-        // Sound removed as per user request
-        showInsight(objectId);
-    }
-
-    @Override
-    public void onHoverExit() {
-        hideInfoCard();
-    }
-
-    @Override
-    public void onRemoteClick() {
-        // Dedicated only to moving/scene shifting. 
-        // MUST run on UI thread because attemptMove touches UI/Views.
-        runOnUiThread(() -> {
-            attemptMove();
-        });
+        // Legacy support or new object logic
     }
 
     // ── Audio yaw updater ─────────────────────────────────────────────────
