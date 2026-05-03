@@ -28,6 +28,11 @@
             android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden|screenSize" />
 
+        <activity
+            android:name=".CalibrationActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
+
     </application>
 
 </manifest>

@@ -72,6 +72,19 @@
             android:textStyle="bold"
             android:letterSpacing="0.06"
             android:backgroundTint="#2060A0"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnCalibration"
+            android:layout_width="220dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:text="LENS CALIBRATION"
+            android:textColor="#A0C0E0"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.06"
+            android:backgroundTint="#102030"
             android:layout_marginBottom="18dp" />
 
         <TextView
