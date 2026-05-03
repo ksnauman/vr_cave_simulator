@@ -4,7 +4,7 @@
             "outputFile": "com.example.vrdesert.app-mergeDebugResources-2:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\ksnau\\.gradle\\caches\\8.13\\transforms\\a362ab988e2b342b2463ca888cbbecf9\\transformed\\material-1.10.0\\res\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
+                    "source": "C:\\Users\\manas\\.gradle\\caches\\8.13\\transforms\\a362ab988e2b342b2463ca888cbbecf9\\transformed\\material-1.10.0\\res\\values-h320dp-port-v13\\values-h320dp-port-v13.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

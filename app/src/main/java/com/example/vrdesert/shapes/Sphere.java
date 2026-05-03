@@ -87,11 +87,14 @@ public class Sphere {
         indexBuffer.position(0);
     }
 
-    public void draw(int shaderProgram, float[] mvpMatrix, int textureId, float alpha, float uOffset) {
+    public void draw(int shaderProgram, float[] mvpMatrix, int textureId, float alpha, float uOffset, float glow) {
         GLES20.glUseProgram(shaderProgram);
         
         int uOffsetHandle = GLES20.glGetUniformLocation(shaderProgram, "uOffset");
         if (uOffsetHandle != -1) GLES20.glUniform1f(uOffsetHandle, uOffset);
+
+        int glowHandle = GLES20.glGetUniformLocation(shaderProgram, "uGlow");
+        if (glowHandle != -1) GLES20.glUniform1f(glowHandle, glow);
 
         int positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
         GLES20.glEnableVertexAttribArray(positionHandle);

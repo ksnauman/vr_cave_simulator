@@ -1,8 +1,10 @@
 package com.example.vrdesert;
 
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.MediaPlayer;
 import android.media.ToneGenerator;
 
 import java.util.Random;
@@ -26,9 +28,29 @@ public class AudioEngine {
     private volatile boolean isPlaying = false;
     private volatile int currentScene = 0;
     private volatile float headYaw = 0f; // -180..180 degrees for spatial panning
+    
+    private MediaPlayer menuMusic;
+    private Context context;
 
-    public AudioEngine() {
+    public AudioEngine(Context context) {
+        this.context = context;
         toneGenerator = new ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100);
+    }
+
+    public void startMenuMusic() {
+        // if (menuMusic == null) {
+        //     menuMusic = MediaPlayer.create(context, R.raw.menu_music);
+        //     menuMusic.setLooping(true);
+        // }
+        // menuMusic.start();
+    }
+
+    public void stopMenuMusic() {
+        if (menuMusic != null) {
+            menuMusic.stop();
+            menuMusic.release();
+            menuMusic = null;
+        }
     }
 
     public void setScene(int scene) {
